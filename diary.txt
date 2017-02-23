@@ -1,0 +1,14 @@
+Week 1:
+    Mostly planning, choosing languages frameworks etc. and getting them set up.
+    Final choices are:
+        - Python 3.4    - Latest available for my systems, not much benefit for
+                          upgrading for this project
+        - PyQt5         - Python bindings for Qt5
+        - Qt5           - Latest version available of the Qt5 GUI framework
+        - json          - Used for configuration files
+        - Git/Github    - Project will be hosted in the (private) repo at:
+                          github.com/OwenTourlamain/ACE-NG
+
+Week 2:
+    Starting initial development, playing about with what works and getting used
+    to python again. This will feed into the system design stage next week.

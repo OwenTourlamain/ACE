@@ -1,0 +1,62 @@
+#!/usr/bin/python3.4
+
+# -- ACE-NG - User Interface and Control for Aberystwyth University PanCam Emulator --
+# Author:     Owen Tourlamain
+# Supervisor: Dr. Laurence Tyler
+
+import os
+import json
+
+class ACE_NG(object):
+    """docstring for ACE_NG."""
+
+    def __init__(self):
+
+        super(ACE_NG, self).__init__()
+
+    def run(self):
+
+        self.readConfigs()
+
+    def readConfigs(self):
+        try:
+            with open("config/defaultConfig.json", 'r') as defaultConfig:
+                self.config = json.load(defaultConfig)
+        except ValueError:
+            print("Default config file is malformed, please repair!")
+        except OSError:
+            print("Error accessing default config, please fix permissions!")
+
+        self.config = self.cleanPaths(self.config)
+
+        print(self.config)
+
+        if os.path.exists(self.config["usr_cfg_dir"]) and os.path.isdir(self.config["usr_cfg_dir"]):
+            for file in os.listdir(self.config["usr_cfg_dir"]):
+                if file.endswith(".json"):
+                    cfgFile = os.path.join(self.config["usr_cfg_dir"], file)
+                    try:
+                        with open(cfgFile, 'r') as cfg:
+                                self.config.update(json.load(cfg))
+                    except ValueError:
+                        print("Config file %s is malformed, skipping..." % cfgFile)
+                    except OSError:
+                        print("Error accessing config file %s, skipping..." % cfgFile)
+
+
+        self.config = self.cleanPaths(self.config)
+
+        print(self.config)
+
+    def cleanPaths(self, config):
+        for item in config:
+            if "dir" in item:
+                config[item] = os.path.normpath(config[item])
+                config[item] = os.path.expanduser(config[item])
+        return config
+
+
+
+if __name__ == "__main__":
+    ace_ng = ACE_NG()
+    ace_ng.run()
