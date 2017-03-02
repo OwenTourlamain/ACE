@@ -12,3 +12,14 @@ Week 1:
 Week 2:
     Starting initial development, playing about with what works and getting used
     to python again. This will feed into the system design stage next week.
+    Wrote OPS.
+
+Week 3:
+    Planning done and Starting development. Wrote and mostly finalised
+    strings.py to enable dynamic language loading.
+
+    Notes for meeting:
+        - Dynamic languages.
+        - Tabbed interface with extensions.
+        - Installable?
+                
