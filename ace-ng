@@ -5,31 +5,45 @@
 # Supervisor: Dr. Laurence Tyler
 
 import os
+import sys
 import json
 
-class ACE_NG(object):
+#print(os.path.abspath(os.path.dirname(__file__)) + os.sep + "lib")
+sys.path.append(os.path.abspath(os.path.dirname(__file__)) + os.sep + "lib")
+from lib.strings import Strings
+from PyQt5.QtWidgets import QMainWindow, QTabWidget, QApplication
+#from lib import sipconfig
+#from lib import PyQt5
+#import sip
+#import PyQt5
+
+class ACE_NG_CORE(object):
     """docstring for ACE_NG."""
 
     def __init__(self):
 
-        super(ACE_NG, self).__init__()
+        pass#super(ACE_NG, self).__init__()
 
     def run(self):
 
         self.readConfigs()
+        self.Strings = Strings(self.config)
+        print(self.Strings.appName)
+        #self.initMainWindow()
 
     def readConfigs(self):
         try:
             with open("config/defaultConfig.json", 'r') as defaultConfig:
                 self.config = json.load(defaultConfig)
         except ValueError:
+            # TODO: Make errors more effective
             print("Default config file is malformed, please repair!")
+            sys.exit(1)
         except OSError:
             print("Error accessing default config, please fix permissions!")
+            sys.exit(1)
 
         self.config = self.cleanPaths(self.config)
-
-        print(self.config)
 
         if os.path.exists(self.config["usr_cfg_dir"]) and os.path.isdir(self.config["usr_cfg_dir"]):
             for file in os.listdir(self.config["usr_cfg_dir"]):
@@ -39,14 +53,12 @@ class ACE_NG(object):
                         with open(cfgFile, 'r') as cfg:
                                 self.config.update(json.load(cfg))
                     except ValueError:
+                        # TODO: Make warnings more effective
                         print("Config file %s is malformed, skipping..." % cfgFile)
                     except OSError:
                         print("Error accessing config file %s, skipping..." % cfgFile)
 
-
         self.config = self.cleanPaths(self.config)
-
-        print(self.config)
 
     def cleanPaths(self, config):
         for item in config:
@@ -55,8 +67,29 @@ class ACE_NG(object):
                 config[item] = os.path.expanduser(config[item])
         return config
 
+    def initMainWindow(self):
+        ace_ng_app = QApplication(sys.argv)
+        ex = ACE_NG_APP()
+        sys.exit(ace_ng_app.exec_())
 
+class ACE_NG_APP(QMainWindow):
+    """docstring for ACE_NG_APP."""
+
+    def __init__(self, ):
+        super().__init__()
+        self.title = Strings.appName
+        self.left = 0
+        self.top = 0
+        self.width = 300
+        self.height = 200
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+
+        #self.table_widget = MyTableWidget(self)
+        #self.setCentralWidget(self.table_widget)
+
+        self.show()
 
 if __name__ == "__main__":
-    ace_ng = ACE_NG()
+    ace_ng = ACE_NG_CORE()
     ace_ng.run()
