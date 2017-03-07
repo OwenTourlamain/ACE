@@ -1,3 +1,18 @@
 {
-    "appName": "Test"
+    "appName": "Test",
+    "LWAC": "LWAC",
+    "RWAC": "RWAC",
+    "HRC": "HRC",
+
+    "SIT_Title": "Single Image",
+    "SIT_LWACcap": "Capture LWAC",
+    "SIT_RWACcap": "Capture RWAC",
+    "SIT_HRCcap": "Capture HRC",
+    "SIT_Save": "Save Capture",
+
+    "MIT_Title": "Multi Image",
+
+    "PTT_Title": "Pan/Tilt Control",
+
+    "IHT_Title": "Image Handling"
 }

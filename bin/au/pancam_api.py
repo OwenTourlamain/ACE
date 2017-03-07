@@ -109,12 +109,12 @@ class ImageMetadata(object):
             self.latitude   = 0.0
             self.longitude  = 0.0
             self.altitude   = 0.0
-
+            
 
 fsnum_to_fsid = [ "NONE", "AFW01", "AFW02", "AFW03", "AFW04", "AFW05" ]
 
 class CameraInfo(object):
-
+    
     def __init__(self, v, fs_num=0):
         self.cam_id = int(v[0])
         self.name = v[1]
@@ -133,12 +133,12 @@ class CameraInfo(object):
             self.filter_set_id = fsnum_to_fsid[fs_num]
 
 class PanCamImage(api.ImageFrame):
-
+    
     def __init__(self, camera=None, info=None, **kwargs):
         super(PanCamImage, self).__init__(**kwargs)
         self.camera = camera
         self.info = info
-
+        
     @property
     def size(self):
         return (self.width, self.height)
@@ -160,7 +160,7 @@ class PanCamImage(api.ImageFrame):
                                     self.image, 'raw', 'L', 0, 1)
         else:
             raise PanCamException("Cannot convert image format %d to PIL format" % self.format)
-
+    
     def gen_metadata_tags(self):
         md = {}
         inf = self.info
@@ -207,7 +207,7 @@ class PanCamImage(api.ImageFrame):
         md['camDesc']       = caminf.desc
         md['metaDataVer']   = "1.0"
         return md
-
+        
 # (inherited from ImageFrame)
 #    def save_ppm(self, filename):
 #        self.save_ppm(filename)
@@ -234,12 +234,12 @@ class PanCamImage(api.ImageFrame):
         pi.save(filename, pnginfo=pinf)
 
 class Camera(object):
-
+    
     def __init__(self, cam_id, pancam_ss, info=None):
         self.cam_id = cam_id
         self.pc = pancam_ss
         self.info = info
-
+    
     def setup_info(self):
         if self.info is None:
             v = self.pc.get_config(self.cam_id)
@@ -248,7 +248,7 @@ class Camera(object):
                 if ret:
                     raise PanCamException("GET FILTER INFO error for cam_id %d" % self.cam_id)
                 self.info = CameraInfo(v, fs_num=filter_set_num)
-
+    
     def get_image_metadata(self):
         ret, flags, m = self.pc.get_image_metadata(self.cam_id)
         if ret:
@@ -322,13 +322,13 @@ class Camera(object):
         self.pc.set_feature(self.cam_id, api.CAM_XF_ROI_Y, y)
         self.pc.set_feature(self.cam_id, api.CAM_XF_ROI_WIDTH, w)
         self.pc.set_feature(self.cam_id, api.CAM_XF_ROI_HEIGHT, h)
-
+    
 
 class MonoCamera(Camera):
-
+    
     def __init__(self, cam_id, pancam_ss):
         super(MonoCamera, self).__init__(cam_id, pancam_ss)
-
+        
     def get_image(self, ae=False, meta=api.META_SAVE_CAM, sync=False, last=False):
         im = PanCamImage(camera=self)
         flags = meta
@@ -381,10 +381,10 @@ class MonoCamera(Camera):
         return im
 
 class ColourCamera(Camera):
-
+    
     def __init__(self, cam_id, pancam_ss):
         super(ColourCamera, self).__init__(cam_id, pancam_ss)
-
+        
     def get_image(self, ae=False, meta=api.META_SAVE_CAM, sync=False, last=False):
         im = PanCamImage(camera=self)
         flags = meta
@@ -401,22 +401,22 @@ class ColourCamera(Camera):
             md = self.get_image_metadata()
             im.info = md
         return im
-
+        
     whitebalance        = CamIntFeature2(api.CAM_FEATURE_WHITEBALANCE)
     whitebalance_mode   = CamFeatureMode(api.CAM_FEATURE_WHITEBALANCE)
 
 class WAC(MonoCamera):
-
+    
     def __init__(self, cam_id, pancam_ss):
         super(WAC, self).__init__(cam_id, pancam_ss)
-
+        
     filter = FilterSelector()
 
 class HRC(ColourCamera):
-
+    
     def __init__(self, cam_id, pancam_ss):
         super(HRC, self).__init__(cam_id, pancam_ss)
-
+        
     zoom        = CamIntFeature(api.CAM_FEATURE_ZOOM)
     focus       = CamIntFeature(api.CAM_FEATURE_FOCUS)
     focus_mode  = CamFeatureMode(api.CAM_FEATURE_FOCUS)
@@ -424,15 +424,15 @@ class HRC(ColourCamera):
     iris_mode   = CamFeatureMode(api.CAM_FEATURE_IRIS)
 
 class MonoHRC(MonoCamera):
-
+    
     def __init__(self, cam_id, pancam_ss):
         super(MonoHRC, self).__init__(cam_id, pancam_ss)
 
 class PTU(object):
-
+    
     def __init__(self, mast_ss):
         self.ms = mast_ss
-
+        
     @property
     def pan(self):
         ret, p, t = self.ms.get_pan_tilt(api.AS_ROUNDED)
@@ -444,7 +444,7 @@ class PTU(object):
         ret = self.ms.set_pan(value)
         if ret:
             raise PanCamException("SET PAN error for cam_id %d" % self.cam_id)
-
+        
     @property
     def tilt(self):
         ret, p, t = self.ms.get_pan_tilt(api.AS_ROUNDED)
@@ -456,7 +456,7 @@ class PTU(object):
         ret = self.ms.set_tilt(value)
         if ret:
             raise PanCamException("SET TILT error for cam_id %d" % self.cam_id)
-
+        
     @property
     def pan_tilt(self):
         ret, p, t = self.ms.get_pan_tilt(api.AS_ROUNDED)
@@ -468,7 +468,7 @@ class PTU(object):
         ret = self.ms.set_pan_tilt(*value)
         if ret:
             raise PanCamException("SET PAN_TILT error for cam_id %d" % self.cam_id)
-
+        
     def stow(self):
         self.ms.stow()
 
@@ -503,3 +503,4 @@ if __name__ == "__main__":
 #    save_image(im, 'zz')
 
     system.disconnect()
+

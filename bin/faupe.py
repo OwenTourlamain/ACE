@@ -40,7 +40,7 @@ _agent_status = [
     "unknown subsystem function",
     "bad subsystem function parameter"
     ]
-    
+
 def float_as_int(fval):
     return unpack('i', pack('f', fval))[0]
 
@@ -70,18 +70,18 @@ class SubSystem(object):
         self.name = name
         self.desc = desc
         self.initialised = False
-        
+
     def init(self):
         """Start up the subsystem"""
         self.initialised = True
-    
+
     def announce(self):
         print "=== Subsystem %s ID %d (%s)" % (self.name, self.ssid, self.desc)
-    
+
     def close(self):
         """Shut down the subsystem"""
         self.initialised = False
-    
+
     def handle(self, cmd_pkt):
         """Handle a command packet"""
         return OKAY_NO_DATA
@@ -92,15 +92,15 @@ class System(SubSystem):
     """Fake System subsystem"""
     def __init__(self, ssid):
         super(System, self).__init__(ssid=ssid, name="SYSTEM", desc="FAKE System")
-    
+
     def init(self):
         self.announce()
         self.initialised = True
-    
+
     def close(self):
         print "--- Subsystem %s ID %d closing down" % (self.name, self.ssid)
         self.initialised = False
-    
+
     def handle(self, cmd_pkt):
         cmd = cmd_pkt.cmd
         if cmd == SYSTEM_CONNECT or cmd == SYSTEM_GET_VERSION:
@@ -308,7 +308,7 @@ camera_xfeatures_default = {
 #####################################
 #####################################
 #####################################
- 
+
 class Camera(object):
     """A fake camera"""
     def __init__(self,
@@ -327,7 +327,7 @@ class Camera(object):
         self.sensmode = sensmode
         self.fw = fw
         self.reset()
-        
+
     def reset(self):
         self.ifeat = camera_features_default.copy()
         self.feat = { f: v/camera_fmult[f] for f,v in self.ifeat.iteritems() }
@@ -344,7 +344,7 @@ class Camera(object):
         self.im_format = IMAGE_FORMAT_MONO8
         self.meta = [ 0 ] * METADATA_NUM_VALUES
         self.meta_flags = 0
-        
+
     def load_image(self, imfile=None):
         dfn = "FAKE_%s_%s.png" % (self.name, self.sensmode)
         ifn = imfile or dfn
@@ -352,10 +352,10 @@ class Camera(object):
         self.im_data = im.tostring()
         self.im_bytes = len(self.im_data)
         self.im_width, self.im_height = im.size
-        
+
     def get_image(image_flags=0, image_format=IMAGE_FORMAT_MONO8):
         pass
-    
+
     def save_metadata(self, flags=META_SAVE_ALL, timestamp=None):
         if not timestamp:
             timestamp = time.time()
@@ -375,7 +375,7 @@ class PanCam(SubSystem):
     """Fake PanCam subsystem providing fixed images"""
     def __init__(self, ssid):
         super(PanCam, self).__init__(ssid=ssid, name="PANCAM", desc="FAKE PanCam")
-    
+
     def init(self):
         self.announce()
         self.cam_func = {
@@ -426,11 +426,11 @@ class PanCam(SubSystem):
             print ">> Initialising %s (%s)" % (cam.name, cam.desc)
             cam.load_image()
         self.initialised = True
-    
+
     def close(self):
         print "--- Subsystem %s ID %d closing down" % (self.name, self.ssid)
         self.initialised = False
-    
+
     def cam_get_image(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg3 & IMAGE_PREVIOUS:
@@ -448,7 +448,7 @@ class PanCam(SubSystem):
                 for slave in cam.slaves:    # Possibly empty...
                     slave.save_metadata(flags=META_SAVE_CAM, timestamp=ts)
         return (RESP_DONE, STATUS_OK, cam.im_width, cam.im_height, 1, cam.im_bytes, cam.im_data)
-    
+
     def cam_set_feature_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 in cam.ixfeat:
@@ -458,7 +458,7 @@ class PanCam(SubSystem):
         cam.ifeat[arg2] = int(arg3)
         cam.feat[arg2] = float(arg3) / camera_fmult[arg2]
         return OKAY_NO_DATA
-        
+
     def cam_get_feature_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 in cam.ixfeat:
@@ -466,7 +466,7 @@ class PanCam(SubSystem):
         if arg2 not in cam.ifeat:
             return BAD_PARAM
         return (RESP_DONE, STATUS_OK, cam.ifeat[arg2])
-    
+
     def cam_set_ext_feature_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 not in cam.ixfeat:
@@ -474,36 +474,36 @@ class PanCam(SubSystem):
         cam.ixfeat[arg2] = int(arg3)
         cam.xfeat[arg2] = float(arg3) / camera_fmult[arg2]
         return OKAY_NO_DATA
-        
+
     def cam_get_ext_feature_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 not in cam.ixfeat:
             return BAD_PARAM
         return (RESP_DONE, STATUS_OK, cam.ixfeat[arg2])
-    
+
     def cam_set_feature_mode(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 not in cam.fmode:
             return BAD_PARAM
         cam.fmode[arg2] = int(arg3)
         return OKAY_NO_DATA
-    
+
     def cam_get_feature_mode(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 not in cam.fmode:
             return BAD_PARAM
         return (RESP_DONE, STATUS_OK, cam.fmode[arg2])
-    
+
     def cam_set_image_format(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 != IMAGE_FORMAT_MONO8:
             return BAD_PARAM
         cam.im_format = arg2
-    
+
     def cam_get_image_format(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         return (RESP_DONE, STATUS_OK, cam.im_format)
-    
+
     def cam_set_filter(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if cam.fw:
@@ -512,7 +512,7 @@ class PanCam(SubSystem):
             else:
                 cam.filter = cam.fw.no_filter_ix
         return OKAY_NO_DATA
-    
+
     def cam_get_filter(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if cam.fw:
@@ -520,13 +520,13 @@ class PanCam(SubSystem):
             return (RESP_DONE, STATUS_OK, cam.filter, f.centre, f.width, cam.fw.fwid_num)
         else:
             return (RESP_DONE, STATUS_OK, cam.filter)
-    
+
     def cam_stow_filters(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if cam.fw:
             cam.filter = cam.fw.no_filter_ix
         return OKAY_NO_DATA
-    
+
     def cam_set_feature_abs_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 in cam.xfeat:
@@ -537,7 +537,7 @@ class PanCam(SubSystem):
         cam.feat[arg2] = v
         cam.ifeat[arg2] = int(v * camera_fmult[arg2] + 0.5)
         return OKAY_NO_DATA
-        
+
     def cam_get_feature_abs_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 in cam.xfeat:
@@ -545,7 +545,7 @@ class PanCam(SubSystem):
         if arg2 not in cam.feat:
             return BAD_PARAM
         return (RESP_DONE, STATUS_OK, float_as_int(cam.feat[arg2]))
-    
+
     def cam_set_ext_feature_abs_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 not in cam.xfeat:
@@ -554,13 +554,13 @@ class PanCam(SubSystem):
         cam.xfeat[arg2] = v
         cam.ixfeat[arg2] = int(v * camera_fmult[arg2] + 0.5)
         return OKAY_NO_DATA
-        
+
     def cam_get_ext_feature_abs_value(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         if arg2 not in cam.xfeat:
             return BAD_PARAM
         return (RESP_DONE, STATUS_OK, float_as_int(cam.xfeat[arg2]))
-    
+
     def cam_get_pancam_config(self, cmd, arg1, arg2, arg3, arg4, data):
         config = ""
         for cam in self.cameras:
@@ -573,20 +573,20 @@ class PanCam(SubSystem):
                     cam.model, cam.guid, cam.desc, fw_id)
             config += l
         return (RESP_DONE, STATUS_OK, len(self.cameras), 0, 0, 0, config)
-    
+
     def cam_get_image_metadata(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         metadata = _meta_struct.pack(*cam.meta)
         return (RESP_DONE, STATUS_OK, METADATA_NUM_VALUES, cam.meta_flags, 0, 0, metadata)
-    
+
     def cam_discard_frames(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         return (RESP_DONE, STATUS_OK, arg2, arg3)
-    
+
     def cam_get_last_image(self, cmd, arg1, arg2, arg3, arg4, data):
         cam = self.cam_by_id[arg1]
         return (RESP_DONE, STATUS_OK, cam.im_width, cam.im_height, 8, cam.im_bytes, cam.im_data)
-    
+
     def handle(self, cmd_pkt):
         cmd = cmd_pkt.cmd
         func = self.cam_func[cmd]
@@ -602,17 +602,17 @@ class Mast(SubSystem):
     """Fake PTU control"""
     def __init__(self, ssid):
         super(Mast, self).__init__(ssid=ssid, name="MAST", desc="FAKE Mast")
-    
+
     def init(self):
         self.announce()
         self.pan = 0.0
         self.tilt = 0.0
         self.initialised = True
-    
+
     def close(self):
         print "--- Subsystem %s ID %d closing down" % (self.name, self.ssid)
         self.initialised = False
-    
+
     def handle(self, cmd_pkt):
         cmd = cmd_pkt.cmd
         arg1 = cmd_pkt.arg1
@@ -684,14 +684,14 @@ class Server(object):
             data = ''
         cmd_pkt = CmdPkt(subsys, cmd, arg1, arg2, arg3, arg4, data_bytes, data)
         return cmd_pkt
-    
+
     def send_resp(self, socket, subsys, status, val1=0, val2=0, val3=0, val4=0, data=None):
         data_bytes = len(data) if data else 0
         pkt_bytes = _pkt_struct.pack(IDENT, subsys, status, val1, val2, val3, val4, 0, data_bytes)
         socket.sendall(pkt_bytes)
         if data:
             socket.sendall(data)
-    
+
     def run(self):
         global running, interrupted, oldsig
         self.ms = socket.socket()
@@ -759,36 +759,36 @@ class Server(object):
 
 def main():
     """Fake AUPE server"""
-    
+
     print "============================"
     print "===== FAKE AUPE SERVER ====="
     print "============================"
     print
-    
+
     # Set up subsystems
-    
+
     system_ss = System(SUBSYS_SYSTEM)
     ss_lookup[SUBSYS_SYSTEM] = system_ss
     ss_numcmds[SUBSYS_SYSTEM] = SYSTEM__MAX__CMD
     system_ss.init()
-    
+
     pancam_ss = PanCam(SUBSYS_PANCAM)
     ss_lookup[SUBSYS_PANCAM] = pancam_ss
     ss_numcmds[SUBSYS_PANCAM] = PANCAM__MAX__CMD
     pancam_ss.init()
-    
+
     mast_ss = Mast(SUBSYS_MAST)
     ss_lookup[SUBSYS_MAST] = mast_ss
     ss_numcmds[SUBSYS_MAST] = MAST__MAX__CMD
     mast_ss.init()
-    
+
     print
-    
+
     server = Server()
     server.run()
-    
+
     print
-    
+
     mast_ss.close()
     pancam_ss.close()
     system_ss.close()
@@ -798,4 +798,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -15,11 +15,21 @@ Week 2:
     Wrote OPS.
 
 Week 3:
-    Planning done and Starting development. Wrote and mostly finalised
+    Planning done and Starting development. Wrote and finalised
     strings.py to enable dynamic language loading.
 
-    Notes for meeting:
+Week 4:
+    System design finished early, starting on core app.
+    Core app at a useable stage, working on first ext.
+
+    Notes for meeting 2/3:
         - Dynamic languages.
         - Tabbed interface with extensions.
-        - Installable?
-                
+        - Installable? - OK
+
+Week 5:
+    Continuing on  single image cap, having issues working out how to use PanCam
+    lib, need to ask Qs 7/3
+        - faupe.py not python3
+        - understanding pancam api
+        - list of parameters and values
