@@ -4,5 +4,36 @@
     "usr_ext_dir":  "~/.ace-ng/ext",
     "usr_lang_dir": "~/.ace-ng/lang",
     "lang_pref":    "en-GB",
-    "preview_size": 300
+    "preview_size": 300,
+    "aupe_addr": "127.0.0.1",
+
+    "LWACFilters": [
+        "Default",
+        "1: Blue",
+        "2: Green",
+        "3: Red",
+        "4: Geol1 438 nm",
+        "5: Geol2 500 nm",
+        "6: Geol3 532 nm",
+        "7: Geol4 568 nm",
+        "8: Geol5 610 nm",
+        "9: Geol6 671 nm",
+        "10: Visible",
+        "11: Panchromatic"
+    ],
+
+    "RWACFilters": [
+        "Default",
+        "1: Blue",
+        "2: Green",
+        "3: Red",
+        "4: Geol7 740 nm",
+        "5: Geol8 780 nm",
+        "6: Geol9 832 nm",
+        "7: Geol10 900 nm",
+        "8: Geol11 950 nm",
+        "9: Geol12 1000 nm",
+        "10: Visible",
+        "11: Panchromatic"
+    ]
 }

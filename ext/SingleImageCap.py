@@ -34,28 +34,36 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.LWACsaveButton.clicked.connect(self.LWACsave)
         self.LWACsaveButton.setDisabled(True)
 
+        self.LWACFilterCombo = QComboBox(self)
+        self.LWACFilterCombo.addItems(self.config["LWACFilters"])
+
         self.LWACpreview = QLabel()
         self.LWACpreview.setFixedWidth(self.config["preview_size"])
         self.LWACpreview.setFixedHeight(self.config["preview_size"])
         self.LWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         LWACLayout.addWidget(self.LWACpreview)
+        LWACLayout.addWidget(self.LWACFilterCombo)
         LWACLayout.addWidget(self.LWACcaptureButton)
         LWACLayout.addWidget(self.LWACsaveButton)
         LWACLayout.addStretch(1)
 
         # == RWAC ==
-        self.RWACcaptureButton = QPushButton(self.strings.SIT_LWACcap, self)
+        self.RWACcaptureButton = QPushButton(self.strings.SIT_RWACcap, self)
         self.RWACcaptureButton.clicked.connect(self.RWACcapture)
 
         self.RWACsaveButton = QPushButton(self.strings.SIT_Save, self)
         self.RWACsaveButton.clicked.connect(self.RWACsave)
         self.RWACsaveButton.setDisabled(True)
 
+        self.RWACFilterCombo = QComboBox(self)
+        self.RWACFilterCombo.addItems(self.config["RWACFilters"])
+
         self.RWACpreview = QLabel()
         self.RWACpreview.setFixedWidth(self.config["preview_size"])
         self.RWACpreview.setFixedHeight(self.config["preview_size"])
         self.RWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         RWACLayout.addWidget(self.RWACpreview)
+        RWACLayout.addWidget(self.RWACFilterCombo)
         RWACLayout.addWidget(self.RWACcaptureButton)
         RWACLayout.addWidget(self.RWACsaveButton)
         RWACLayout.addStretch(1)
@@ -87,6 +95,7 @@ class Tab(QWidget): # HACK: Make class load dynamically
 # TODO: Refactor these,  lots of repettion
     def LWACcapture(self):
         camera = self.api.pancam.cameras[0]
+        camera.filter = self.LWACFilterCombo.currentIndex()
         self.LWACimage = camera.get_image()
         pixmap = QPixmap.fromImage(ImageQt(self.LWACimage.as_pil_image()).scaled(self.LWACpreview.size(), Qt.KeepAspectRatio))
         self.LWACpreview.setPixmap(pixmap)
@@ -94,6 +103,7 @@ class Tab(QWidget): # HACK: Make class load dynamically
 
     def RWACcapture(self):
         camera = self.api.pancam.cameras[1]
+        camera.filter = self.RWACFilterCombo.currentIndex()
         self.RWACimage = camera.get_image()
         pixmap = QPixmap.fromImage(ImageQt(self.RWACimage.as_pil_image()).scaled(self.RWACpreview.size(), Qt.KeepAspectRatio))
         self.RWACpreview.setPixmap(pixmap)
@@ -111,9 +121,9 @@ class Tab(QWidget): # HACK: Make class load dynamically
             self.LWACimage.save_png_with_metadata("LWAC.png")
 
     def RWACsave(self):
-        if self.LWACimage:
-            self.LWACimage.save_png_with_metadata("RWAC.png")
+        if self.RWACimage:
+            self.RWACimage.save_png_with_metadata("RWAC.png")
 
     def HRCsave(self):
-        if self.LWACimage:
-            self.LWACimage.save_png_with_metadata("HRC.png")
+        if self.HRCimage:
+            self.HRCimage.save_png_with_metadata("HRC.png")

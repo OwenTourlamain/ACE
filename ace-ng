@@ -124,7 +124,8 @@ class ACE_NG_APP(QMainWindow):
             tabPane.addTab(tab, tab.title)
 
         self.setCentralWidget(tabPane)
-        api.system.connect()
+        api.system.connect(agent_addr=config["aupe_addr"])
+        api.pancam.setup_cameras()
         self.show()
 
     def runFAUPE(self): # TODO: Find a way to load this at runtime, display in own window?

@@ -19,7 +19,7 @@ Week 3:
     strings.py to enable dynamic language loading.
 
 Week 4:
-    System design finished early, starting on core app.
+    System design finished ahead of schedule, starting on core app.
     Core app at a useable stage, working on first ext.
 
     Notes for meeting 2/3:
@@ -33,3 +33,4 @@ Week 5:
         - faupe.py not python3
         - understanding pancam api
         - list of parameters and values
+        - Github/google usernames

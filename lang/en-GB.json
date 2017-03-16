@@ -13,6 +13,11 @@
     "MIT_Title": "Multi Image",
 
     "PTT_Title": "Pan/Tilt Control",
+    "PTT_Home": "Reset to Home",
+    "PTT_Pan": "Pan",
+    "PTT_Tilt": "Tilt",
+    "PTT_SetPan": "Set Pan",
+    "PTT_SetTilt": "Set Tilt",
 
     "IHT_Title": "Image Handling"
 }

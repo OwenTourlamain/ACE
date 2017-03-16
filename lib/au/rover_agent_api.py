@@ -26,7 +26,7 @@ _agent_status = [
     "unknown subsystem function",
     "bad subsystem function parameter"
     ]
-    
+
 def float_as_int(fval):
     return unpack('i', pack('f', fval))[0]
 
@@ -39,10 +39,10 @@ class AgentException(Exception):
         if isinstance(arg, int) and arg >= 0 and arg < len(_agent_status):
             arg = _agent_status[arg]
         super(AgentException, self).__init__(arg)
-            
+
 
 class AgentConnection(object):
-    
+
     def set_agent_addr(self, addr):
         if addr is None or not addr:
             if 'AGENT_ADDR' in os.environ:
@@ -133,8 +133,8 @@ class SystemSubsys(SubSystem):
     def __init__(self, connection=None):
         super(SystemSubsys, self).__init__(SUBSYS_SYSTEM, connection)
 
-    def connect(self):
-        self.ac.connect()
+    def connect(self, agent_addr=None):
+        self.ac.connect(agent_addr)
         resp = self.ac.cmd_resp(SUBSYS_SYSTEM, SYSTEM_CONNECT)
         status = resp.status
         if status:
@@ -172,9 +172,9 @@ class SystemSubsys(SubSystem):
             raise AgentException(status)
         return resp.val1
 
-    
+
 class ImageFrame(object):
-    
+
     def __init__(self, width=0, height=0, depth=0, format=0, image_bytes=0, image=b''):
         self.width = width
         self.height = height
@@ -182,13 +182,13 @@ class ImageFrame(object):
         self.format = format
         self.image_bytes = image_bytes
         self.image = image
-        
+
     def tostring(self):
         return self.image
-        
+
     def tobytes(self):
         return self.image
-    
+
     def save_ppm(self, filename):
         if self.depth == 1 and (self.format == IMAGE_FORMAT_MONO8
                 or self.format == IMAGE_FORMAT_BAYER):
@@ -209,17 +209,17 @@ class ImageFrame(object):
         else:
             raise AgentException("Cannot save image as PPM (format %d, depth %d)" %
                 (self.format, self.depth))
-            
+
 
 class PanCamSubsys(SubSystem):
-    
+
     def __init__(self, connection=None):
         super(PanCamSubsys, self).__init__(SUBSYS_PANCAM, connection)
         self.config = None
         self.cameras = []
 
     #=========== Camera control ==========
-    
+
     def get_image(self, camera_id, image_format, image_frame, flags=0):
         resp = self.ac.cmd_resp(self.ID, CAM_GET_IMAGE, camera_id, image_format, flags)
         status = resp.status
@@ -290,14 +290,14 @@ class PanCamSubsys(SubSystem):
         resp = self.ac.cmd_resp(self.ID, CAM_GET_FEATURE_MODE,
             camera_id, feature)
         return resp.status, resp.val1
-        
+
     def get_image_metadata(self, camera_id, _pattern = '<' + ('i' * METADATA_NUM_VALUES)):
         resp = self.ac.cmd_resp(self.ID, CAM_GET_IMAGE_METADATA, camera_id)
         if resp.status:
             return resp.status, 0, ()
         metadata = unpack(_pattern, resp.data)
         return resp.status, resp.val2, metadata
-    
+
     def discard_frames(self, camera_id, nframes, discard_mode):
         resp = self.ac.cmd_resp(self.ID, CAM_DISCARD_FRAMES, camera_id, nframes,
             discard_mode)
@@ -333,7 +333,7 @@ class PanCamSubsys(SubSystem):
                     v = line.split('\t')
                     self.config[int(v[0])] = v
         return self.config
-    
+
     def setup_cameras(self, set_exposure=False):
         for cam in self.cameras:
             cam.setup_info()
@@ -345,7 +345,7 @@ class PanCamSubsys(SubSystem):
                     cam.gain = 400  # Imaging Source Firewire camera
                 else:
                     cam.gain = 0    # AVT/Prosilica GigE Vision camera
-    
+
     def get_config(self, camera_id):
         if self.config is None:
             self.get_pancam_config()
@@ -356,7 +356,7 @@ class PanCamSubsys(SubSystem):
 
 
 class MastSubsys(SubSystem):
-    
+
     def __init__(self, connection=None):
         super(MastSubsys, self).__init__(SUBSYS_MAST, connection)
 
@@ -389,7 +389,7 @@ class MastSubsys(SubSystem):
         return resp.status, pan, tilt
 
 class ArmSubsys(SubSystem):
-    
+
     def __init__(self, connection=None):
         super(ArmSubsys, self).__init__(SUBSYS_ARM, connection)
 
@@ -429,14 +429,14 @@ class ArmSubsys(SubSystem):
         return resp.status, base, shoulder, elbow
 
 class AeroCamSubsys(SubSystem):
-    
+
     def __init__(self, connection=None):
         super(AeroCamSubsys, self).__init__(SUBSYS_AEROCAM, connection)
         self.config = None
         self.cameras = []
 
     #=========== Camera control ==========
-    
+
     def get_image(self, camera_id, image_format, image_frame, flags=0):
         resp = self.ac.cmd_resp(self.ID, AEROCAM_GET_IMAGE, camera_id, image_format, flags)
         status = resp.status
@@ -498,24 +498,24 @@ class AeroCamSubsys(SubSystem):
         resp = self.ac.cmd_resp(self.ID, AEROCAM_GET_FEATURE_MODE,
             camera_id, feature)
         return resp.status, resp.val1
-        
+
     def set_image_format(self, camera_id, image_format):
         resp = self.ac.cmd_resp(self.ID, AEROCAM_SET_IMAGE_FORMAT,
             camera_id, image_format)
         return resp.status
-        
+
     def get_image_format(self, camera_id):
         resp = self.ac.cmd_resp(self.ID, AEROCAM_GET_IMAGE_FORMAT,
             camera_id)
         return resp.status, resp.val1
-    
+
     def get_image_metadata(self, camera_id, _pattern = '<' + ('i' * METADATA_NUM_VALUES)):
         resp = self.ac.cmd_resp(self.ID, AEROCAM_GET_IMAGE_METADATA, camera_id)
         if resp.status:
             return resp.status, 0, ()
         metadata = unpack(_pattern, resp.data)
         return resp.status, resp.val2, metadata
-        
+
     def discard_frames(self, camera_id, nframes, discard_mode):
         resp = self.ac.cmd_resp(self.ID, AEROCAM_DISCARD_FRAMES, camera_id, nframes,
             discard_mode)
@@ -551,7 +551,7 @@ class AeroCamSubsys(SubSystem):
                     v = line.split('\t')
                     self.config[int(v[0])] = v
         return self.config
-    
+
     def setup_cameras(self, set_exposure=False):
         for cam in self.cameras:
             cam.setup_info()
@@ -561,7 +561,7 @@ class AeroCamSubsys(SubSystem):
                     cam.shutter = 0.1
                     cam.gain_mode = FEATURE_MODE_MANUAL
                     cam.gain = 400
-    
+
     def get_config(self, camera_id):
         if self.config is None:
             self.get_aerocam_config()
@@ -571,26 +571,26 @@ class AeroCamSubsys(SubSystem):
             return None
 
 class AerobotSubsys(SubSystem):
-    
+
     def __init__(self, connection=None):
         super(AerobotSubsys, self).__init__(SUBSYS_AEROBOT, connection)
 
     #=========== IMU control ============
-    
+
     def get_orientation(self):
         resp = self.ac.cmd_resp(self.ID, AEROBOT_GET_ORIENTATION)
         roll = resp.val1 * 1.0 / ANG_SCALE_FINE
         pitch = resp.val2 * 1.0 / ANG_SCALE_FINE
         yaw = resp.val3 * 1.0 / ANG_SCALE_FINE
         return resp.status, roll, pitch, yaw
-        
+
 
     def reset_imu(self):
         resp = self.ac.cmd_resp(self.ID, AEROBOT_RESET_IMU)
         return resp.status
-        
+
     #========== GPS control ==============
-    
+
     def get_position(self):
         resp = self.ac.cmd_resp(self.ID, AEROBOT_GET_POSITION)
         lat = resp.val1 * 1.0 / ANG_SCALE_FINE
@@ -622,4 +622,3 @@ if __name__ == '__main__':
     print("protocol version = %d.%d" % version)
     ss.disconnect()
     print("disconnected")
-

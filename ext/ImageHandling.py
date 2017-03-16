@@ -8,7 +8,7 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.config = config
         self.strings = strings
         self.api = api
-        self.title = self.strings.MIT_Title
+        self.title = self.strings.IHT_Title
 
         self.initTab()
 
