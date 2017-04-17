@@ -6,8 +6,9 @@ from PIL.ImageQt import ImageQt
 class Tab(QWidget): # HACK: Make class load dynamically
     """docstring for SingleImageCap."""
 
-    def __init__(self, config, strings, api):
+    def __init__(self, config, strings, api, verbose):
         super().__init__()
+        self.verbose = verbose
         self.config = config
         self.strings = strings
         self.api = api
@@ -35,11 +36,11 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.LWACsaveButton.setDisabled(True)
 
         self.LWACFilterCombo = QComboBox(self)
-        self.LWACFilterCombo.addItems(self.config["LWACFilters"])
+        self.LWACFilterCombo.addItems(self.config.LWACFilters)
 
         self.LWACpreview = QLabel()
-        self.LWACpreview.setFixedWidth(self.config["preview_size"])
-        self.LWACpreview.setFixedHeight(self.config["preview_size"])
+        self.LWACpreview.setFixedWidth(self.config.preview_size)
+        self.LWACpreview.setFixedHeight(self.config.preview_size)
         self.LWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         LWACLayout.addWidget(self.LWACpreview)
         LWACLayout.addWidget(self.LWACFilterCombo)
@@ -56,11 +57,11 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.RWACsaveButton.setDisabled(True)
 
         self.RWACFilterCombo = QComboBox(self)
-        self.RWACFilterCombo.addItems(self.config["RWACFilters"])
+        self.RWACFilterCombo.addItems(self.config.RWACFilters)
 
         self.RWACpreview = QLabel()
-        self.RWACpreview.setFixedWidth(self.config["preview_size"])
-        self.RWACpreview.setFixedHeight(self.config["preview_size"])
+        self.RWACpreview.setFixedWidth(self.config.preview_size)
+        self.RWACpreview.setFixedHeight(self.config.preview_size)
         self.RWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         RWACLayout.addWidget(self.RWACpreview)
         RWACLayout.addWidget(self.RWACFilterCombo)
@@ -77,8 +78,8 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.HRCsaveButton.setDisabled(True)
 
         self.HRCpreview = QLabel()
-        self.HRCpreview.setFixedWidth(self.config["preview_size"])
-        self.HRCpreview.setFixedHeight(self.config["preview_size"])
+        self.HRCpreview.setFixedWidth(self.config.preview_size)
+        self.HRCpreview.setFixedHeight(self.config.preview_size)
         self.HRCpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         HRCLayout.addWidget(self.HRCpreview)
         HRCLayout.addWidget(self.HRCcaptureButton)

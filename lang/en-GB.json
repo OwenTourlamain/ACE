@@ -13,11 +13,18 @@
     "MIT_Title": "Multi Image",
 
     "PTT_Title": "Pan/Tilt Control",
-    "PTT_Home": "Reset to Home",
+    "PTT_Home": "Stow",
     "PTT_Pan": "Pan",
     "PTT_Tilt": "Tilt",
     "PTT_SetPan": "Set Pan",
     "PTT_SetTilt": "Set Tilt",
+    "PTT_CurrTitle": "Currernt PTU Values",
+    "PTT_AdjustTitle": "Adjust PTU",
+    "PTT_Refresh": "Refresh",
+    "PTT_LargeAdjustLabel": "Large Adjust Amount:",
+    "PTT_PreviewTitle": "Camera Preview",
+    "PTT_SetTitle": "Set PTU",
+    "PTT_AutoRefresh": "Auto Refresh",
 
     "IHT_Title": "Image Handling"
 }

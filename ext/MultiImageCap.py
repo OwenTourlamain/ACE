@@ -3,8 +3,9 @@ from PyQt5.QtWidgets import *
 class Tab(QWidget): # HACK: Make class load dynamically
     """docstring for MultiImageCap."""
 
-    def __init__(self, config, strings, api):
+    def __init__(self, config, strings, api, verbose):
         super().__init__()
+        self.verbose = verbose
         self.config = config
         self.strings = strings
         self.api = api

@@ -35,5 +35,7 @@
         "9: Geol12 1000 nm",
         "10: Visible",
         "11: Panchromatic"
-    ]
+    ],
+
+    "PTT_LargeAdjustVal": "10"
 }

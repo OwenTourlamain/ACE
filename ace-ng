@@ -10,7 +10,7 @@ import json
 
 #print(os.path.abspath(os.path.dirname(__file__)) + os.sep + "lib")
 sys.path.append(os.path.abspath(os.path.dirname(__file__)) + os.sep + "lib")
-from lib.strings import Strings
+from lib.dynamicProperties import DynamicProperties
 from lib.au import pancam_api as api
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -32,61 +32,29 @@ class ACE_NG_CORE(object):
 
     def run(self):
 
-        self.readConfigs()
-        self.Strings = Strings(self.config)
+        self.verbose = True # TODO: Make this a commandline flag
+        self.config = DynamicProperties(os.path.normpath("config/defaultConfig.json"), self.verbose, cleanPaths=True) # TODO: Remove hardcoded paths
+        self.strings = DynamicProperties(os.path.normpath("lang/en-GB.json"), self.verbose)
+        self.config.update(["config", self.config.usr_cfg_dir])
+        self.strings.update(["lang", self.config.usr_lang_dir], self.config.lang_pref)
         self.initMainWindow()
-
-    def readConfigs(self):
-        try:
-            with open("config/defaultConfig.json", 'r') as defaultConfig:
-                self.config = json.load(defaultConfig)
-        except ValueError:
-            # TODO: Make errors more effective
-            print("Default config file is malformed, please repair!")
-            sys.exit(1)
-        except OSError:
-            print("Error accessing default config, please fix permissions!")
-            sys.exit(1)
-
-        self.config = self.cleanPaths(self.config)
-
-        if os.path.exists(self.config["usr_cfg_dir"]) and os.path.isdir(self.config["usr_cfg_dir"]):
-            for file in os.listdir(self.config["usr_cfg_dir"]):
-                if file.endswith(".json"):
-                    cfgFile = os.path.join(self.config["usr_cfg_dir"], file)
-                    try:
-                        with open(cfgFile, 'r') as cfg:
-                                self.config.update(json.load(cfg))
-                    except ValueError:
-                        # TODO: Make warnings more effective
-                        print("Config file %s is malformed, skipping..." % cfgFile)
-                    except OSError:
-                        print("Error accessing config file %s, skipping..." % cfgFile)
-
-        self.config = self.cleanPaths(self.config)
-
-    def cleanPaths(self, config):
-        for item in config:
-            if "dir" in item:
-                config[item] = os.path.normpath(config[item])
-                config[item] = os.path.expanduser(config[item])
-        return config
 
     def initMainWindow(self):
         ace_ng_app = QApplication(sys.argv)
-        ex = ACE_NG_APP(self.Strings, self.config)
+        ex = ACE_NG_APP(self.strings, self.config, self.verbose)
         sys.exit(ace_ng_app.exec_())
 
 class ACE_NG_APP(QMainWindow):
     """docstring for ACE_NG_APP."""
 
-    def __init__(self, strings, config):
+    def __init__(self, strings, config, verbose):
         super().__init__()
-        self.Strings = strings
-        self.Config = config
-        self.title = self.Strings.appName
-        self.left = 0
-        self.top = 0
+        self.verbose = verbose
+        self.strings = strings
+        self.config = config
+        self.title = self.strings.appName
+        self.left = 10
+        self.top = 10
         self.width = 800
         self.height = 500
         self.setWindowTitle(self.title)
@@ -117,15 +85,16 @@ class ACE_NG_APP(QMainWindow):
 
         tabPane = QTabWidget()
 
-        tabList = ["SingleImageCap", "MultiImageCap", "PanTilt", "ImageHandling"]
+        api.system.connect(agent_addr=config.aupe_addr)
+        api.pancam.setup_cameras()
+
+        tabList = ["SingleImageCap", "MultiImageCap", "PanTilt"] # TODO: Make this dynamic and configurable
         for tabName in tabList:
             exec("from ext.%s import Tab" % tabName) # HACK: Make class load dynamically
-            tab = sys.modules["ext.%s" % tabName].Tab(self.Config, self.Strings, api)
+            tab = sys.modules["ext.%s" % tabName].Tab(self.config, self.strings, api, self.verbose)
             tabPane.addTab(tab, tab.title)
 
         self.setCentralWidget(tabPane)
-        api.system.connect(agent_addr=config["aupe_addr"])
-        api.pancam.setup_cameras()
         self.show()
 
     def runFAUPE(self): # TODO: Find a way to load this at runtime, display in own window?
