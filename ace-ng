@@ -53,12 +53,12 @@ class ACE_NG_APP(QMainWindow):
         self.strings = strings
         self.config = config
         self.title = self.strings.appName
-        self.left = 10
-        self.top = 10
-        self.width = 800
-        self.height = 500
+        #self.left = 10
+        #self.top = 10
+        self.width = 400
+        self.height = 250
         self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
+        #self.setGeometry(self.left, self.top, self.width, self.height)
 
         exitAct = QAction(QIcon('exit.png'), 'Exit', self)
         exitAct.setShortcut('Ctrl+Q')
@@ -93,8 +93,11 @@ class ACE_NG_APP(QMainWindow):
             exec("from ext.%s import Tab" % tabName) # HACK: Make class load dynamically
             tab = sys.modules["ext.%s" % tabName].Tab(self.config, self.strings, api, self.verbose)
             tabPane.addTab(tab, tab.title)
-
+        self.scrollArea = QScrollArea()
+        #self.scrollArea.setWidget(tabPane)
+        #self.setCentralWidget(self.scrollArea)
         self.setCentralWidget(tabPane)
+
         self.show()
 
     def runFAUPE(self): # TODO: Find a way to load this at runtime, display in own window?

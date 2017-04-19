@@ -58,18 +58,18 @@ class Tab(QWidget): # HACK: Make class load dynamically
         setPTULayout.addWidget(self.tiltLabel, 1, 0)
         setPTULayout.addWidget(self.tilt, 1, 1)
         setPTULayout.addWidget(self.setTiltButton, 1, 2)
-        setPTULayout.addWidget(self.homeButton, 2, 2)
+        setPTULayout.addWidget(self.homeButton, 0, 3)
 
         setGroup = QGroupBox(self.strings.PTT_SetTitle)
         setGroup.setLayout(setPTULayout)
 
         adjustPTULayout = QGridLayout()
-        adjustPTULayout.setRowMinimumHeight(0, 55)
-        adjustPTULayout.setRowMinimumHeight(1, 55)
-        adjustPTULayout.setRowMinimumHeight(2, 55)
-        adjustPTULayout.setRowMinimumHeight(3, 55)
-        adjustPTULayout.setRowMinimumHeight(4, 55)
-        adjustPTULayout.setRowMinimumHeight(5, 55)
+        #adjustPTULayout.setRowMinimumHeight(0, 55)
+        #adjustPTULayout.setRowMinimumHeight(1, 55)
+        #adjustPTULayout.setRowMinimumHeight(2, 55)
+        #adjustPTULayout.setRowMinimumHeight(3, 55)
+        #adjustPTULayout.setRowMinimumHeight(4, 55)
+        #adjustPTULayout.setRowMinimumHeight(5, 55)
 
         self.smallAdjustLeft    = SquareButton(30, u"\u2190")
         self.smallAdjustLeft.clicked.connect(self.adjustLeft)
@@ -113,7 +113,7 @@ class Tab(QWidget): # HACK: Make class load dynamically
         currentValLayout = QHBoxLayout()
 
         self.currentVal = QLabel()
-        self.refreshButton = QPushButton(self.strings.PTT_Refresh)
+        self.refreshButton = QPushButton(u"\u21BB")
         self.refreshButton.clicked.connect(self.updatePTUVals)
 
         self.sideView = QLabel("Tilt")
@@ -130,14 +130,12 @@ class Tab(QWidget): # HACK: Make class load dynamically
 
         self.updatePTUVals()
 
-        leftValLayout = QVBoxLayout()
+        leftValLayout = QHBoxLayout()
 
-        leftValLayout.addWidget(self.currentVal)
-        leftValLayout.addWidget(self.refreshButton)
-
-        currentValLayout.addLayout(leftValLayout)
+        currentValLayout.addWidget(self.currentVal)
         currentValLayout.addWidget(self.sideView)
         currentValLayout.addWidget(self.topView)
+        currentValLayout.addWidget(self.refreshButton)
 
         currentValGroup = QGroupBox(self.strings.PTT_CurrTitle)
         currentValGroup.setLayout(currentValLayout)
@@ -174,6 +172,8 @@ class Tab(QWidget): # HACK: Make class load dynamically
         layout.addWidget(previewGroup, 1, 0)
         layout.addWidget(setGroup, 0, 1)
         layout.addWidget(adjustGroup, 1, 1)
+        #blankItem = QWidget()
+        #layout.addWidget(blankItem, 2, 2)
 
         self.setLayout(layout)
 
@@ -244,45 +244,45 @@ class Tab(QWidget): # HACK: Make class load dynamically
         sideViewPixmap = self.sideViewPixmapBase.transformed(tiltTransform)
         self.sideView.setPixmap(sideViewPixmap)
 
-class SquareButton(QPushButton):
+class SquareButton(QToolButton):
     """docstring for SquareButton."""
 
-    def __init__(self, size, text=None):
-        super(SquareButton, self).__init__(text)
-        self.size = size
+    def __init__(self, size=0, text=None):
+        super(SquareButton, self).__init__()
+        #self.size = size
 
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
-        sizeHint = self.sizeHint()
-        if sizeHint.isValid():
-            self.setMinimumSize(sizeHint)
+        #sizeHint = self.sizeHint()
+        #if sizeHint.isValid():
+        #    self.setMinimumSize(sizeHint)
 
     def heightForWidth(self, width):
         return self.width()
 
-    def sizeHint(self):
-        return QSize(self.size, self.size)
+    #def sizeHint(self):
+    #    return QSize(self.size, self.size)
 
 class SquareLineEdit(QLineEdit):
     """docstring for SquareButton."""
 
-    def __init__(self, size, text=None):
+    def __init__(self, size=0, text=None):
         super(SquareLineEdit, self).__init__(text)
-        self.size = size
+        #self.size = size
 
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
-        sizeHint = self.sizeHint()
-        if sizeHint.isValid():
-            self.setMinimumSize(sizeHint)
+        #sizeHint = self.sizeHint()
+        #if sizeHint.isValid():
+        #    self.setMinimumSize(sizeHint)
 
     def heightForWidth(self, width):
         return width
 
-    def sizeHint(self):
-        return QSize(self.size, self.size)
+#    def sizeHint(self):
+#        return QSize(self.size, self.size)
 
 class SquareLabel(QLabel):
     """docstring for SquareButton."""
