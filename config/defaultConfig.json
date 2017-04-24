@@ -6,6 +6,11 @@
     "lang_pref":    "en-GB",
     "preview_size": 300,
     "aupe_addr": "127.0.0.1",
+    "cameras": [
+        "LWAC",
+        "RWAC",
+        "HRC"
+    ],
 
     "LWACFilters": [
         "Default",

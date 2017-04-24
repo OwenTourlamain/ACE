@@ -22,10 +22,12 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.initTab()
 
     def initTab(self):
-        layout = QGridLayout()
-        LWACLayout = QVBoxLayout()
-        RWACLayout = QVBoxLayout()
-        HRCLayout = QVBoxLayout()
+        layout = QVBoxLayout()
+        imageLayout = QHBoxLayout()
+        LWACControlsLayout = QVBoxLayout()
+        RWACControlsLayout = QVBoxLayout()
+        HRCControlsLayout = QVBoxLayout()
+        controlsLayout = QHBoxLayout()
 
         # == LWAC ==
         self.LWACcaptureButton = QPushButton(self.strings.SIT_LWACcap, self)
@@ -42,11 +44,28 @@ class Tab(QWidget): # HACK: Make class load dynamically
         #self.LWACpreview.setFixedWidth(self.config.preview_size)
         #self.LWACpreview.setFixedHeight(self.config.preview_size)
         self.LWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
-        layout.addWidget(self.LWACpreview, 0, 0)
-        layout.addWidget(self.LWACFilterCombo, 1, 0)
-        layout.addWidget(self.LWACcaptureButton, 2, 0)
-        layout.addWidget(self.LWACsaveButton, 3, 0)
+        imageLayout.addWidget(self.LWACpreview)
+        LWACControlsLayout.addWidget(self.LWACFilterCombo)
+        LWACControlsLayout.addWidget(self.LWACcaptureButton)
+        LWACControlsLayout.addWidget(self.LWACsaveButton)
         #LWACLayout.addStretch(1)
+
+        # == HRC ==
+        self.HRCcaptureButton = QPushButton(self.strings.SIT_HRCcap, self)
+        self.HRCcaptureButton.clicked.connect(self.HRCcapture)
+
+        self.HRCsaveButton = QPushButton(self.strings.SIT_Save, self)
+        self.HRCsaveButton.clicked.connect(self.HRCsave)
+        self.HRCsaveButton.setDisabled(True)
+
+        self.HRCpreview = SquareLabel()
+        #self.HRCpreview.setFixedWidth(self.config.preview_size)
+        #self.HRCpreview.setFixedHeight(self.config.preview_size)
+        self.HRCpreview.setStyleSheet("border: 1px solid black; padding: 2px")
+        imageLayout.addWidget(self.HRCpreview)
+        HRCControlsLayout.addWidget(self.HRCcaptureButton)
+        HRCControlsLayout.addWidget(self.HRCsaveButton)
+        #layout.addStretch(1)
 
         # == RWAC ==
         self.RWACcaptureButton = QPushButton(self.strings.SIT_RWACcap, self)
@@ -63,34 +82,21 @@ class Tab(QWidget): # HACK: Make class load dynamically
         #self.RWACpreview.setFixedWidth(self.config.preview_size)
         #self.RWACpreview.setFixedHeight(self.config.preview_size)
         self.RWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
-        layout.addWidget(self.RWACpreview, 0, 2)
-        layout.addWidget(self.RWACFilterCombo, 1, 2)
-        layout.addWidget(self.RWACcaptureButton, 2, 2)
-        layout.addWidget(self.RWACsaveButton, 3, 2)
+        imageLayout.addWidget(self.RWACpreview)
+        RWACControlsLayout.addWidget(self.RWACFilterCombo)
+        RWACControlsLayout.addWidget(self.RWACcaptureButton)
+        RWACControlsLayout.addWidget(self.RWACsaveButton)
         #RWACLayout.addStretch(1)
 
-        # == HRC ==
-        self.HRCcaptureButton = QPushButton(self.strings.SIT_HRCcap, self)
-        self.HRCcaptureButton.clicked.connect(self.HRCcapture)
-
-        self.HRCsaveButton = QPushButton(self.strings.SIT_Save, self)
-        self.HRCsaveButton.clicked.connect(self.HRCsave)
-        self.HRCsaveButton.setDisabled(True)
-
-        self.HRCpreview = SquareLabel()
-        #self.HRCpreview.setFixedWidth(self.config.preview_size)
-        #self.HRCpreview.setFixedHeight(self.config.preview_size)
-        self.HRCpreview.setStyleSheet("border: 1px solid black; padding: 2px")
-        layout.addWidget(self.HRCpreview, 0, 1)
-        layout.addWidget(self.HRCcaptureButton, 1, 1)
-        layout.addWidget(self.HRCsaveButton, 2, 1)
-        #layout.addStretch(1)
-
-        #layout.addLayout(LWACLayout)
+        layout.addLayout(imageLayout)
+        controlsLayout.addLayout(LWACControlsLayout)
+        controlsLayout.addLayout(HRCControlsLayout)
+        controlsLayout.addLayout(RWACControlsLayout)
+        layout.addLayout(controlsLayout)
         #layout.addLayout(HRCLayout)
         #layout.addLayout(RWACLayout)
         #layout.addStretch(1)
-        
+
         rootLayout = QVBoxLayout()
         rootLayout.addLayout(layout)
         rootLayout.addStretch()
@@ -139,7 +145,7 @@ class SquareLabel(QLabel): #TODO: Move to utility class
         super(SquareLabel, self).__init__(text)
         #self.size = size
 
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Ignored , QSizePolicy.Ignored)
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
         #sizeHint = self.sizeHint()
@@ -147,7 +153,7 @@ class SquareLabel(QLabel): #TODO: Move to utility class
         #    self.setMinimumSize(sizeHint)
 
     def heightForWidth(self, width):
-        return width
+        return self.width()
 
-    #def sizeHint(self):
-    #    return QSize(self.size, self.size)
+#    def sizeHint(self):
+#        return QSize(self.size, self.size)

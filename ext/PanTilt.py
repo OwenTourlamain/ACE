@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PIL.ImageQt import ImageQt
 
 class Tab(QWidget): # HACK: Make class load dynamically
     """docstring for PanTiltTab."""
@@ -63,78 +64,95 @@ class Tab(QWidget): # HACK: Make class load dynamically
         setGroup = QGroupBox(self.strings.PTT_SetTitle)
         setGroup.setLayout(setPTULayout)
 
-        adjustPTULayout = QGridLayout()
-        #adjustPTULayout.setRowMinimumHeight(0, 55)
-        #adjustPTULayout.setRowMinimumHeight(1, 55)
-        #adjustPTULayout.setRowMinimumHeight(2, 55)
-        #adjustPTULayout.setRowMinimumHeight(3, 55)
-        #adjustPTULayout.setRowMinimumHeight(4, 55)
-        #adjustPTULayout.setRowMinimumHeight(5, 55)
+        adjustPTULayout = QVBoxLayout()
+        adjustPTULayoutLine1 = QHBoxLayout()
+        adjustPTULayoutLine2 = QHBoxLayout()
+        adjustPTULayoutLine3 = QHBoxLayout()
+        adjustPTULayoutLine4 = QHBoxLayout()
+        adjustPTULayoutLine5 = QHBoxLayout()
+        adjustPTULayoutLine6 = QHBoxLayout()
+
+        smallArrowBase = QPixmap("images/arrow_small.png")
+        largeArrowBase = QPixmap("images/arrow_large.png")
+        stowBase = QPixmap("images/stow.png")
+        refreshBase = QPixmap("images/refresh.png")
+
+        leftTrans = QTransform()
+        leftTrans.rotate(180)
+        upTrans = QTransform()
+        upTrans.rotate(-90)
+        downTrans = QTransform()
+        downTrans.rotate(90)
 
         self.smallAdjustLeft    = SquareButton(30, u"\u2190")
         self.smallAdjustLeft.clicked.connect(self.adjustLeft)
+        self.smallAdjustLeft.setIcon(QIcon(smallArrowBase.transformed(leftTrans)))
         self.smallAdjustUp      = SquareButton(30, u"\u2191")
         self.smallAdjustUp.clicked.connect(self.adjustUp)
+        self.smallAdjustUp.setIcon(QIcon(smallArrowBase.transformed(upTrans)))
         self.smallAdjustRight   = SquareButton(30, u"\u2192")
         self.smallAdjustRight.clicked.connect(self.adjustRight)
+        self.smallAdjustRight.setIcon(QIcon(smallArrowBase))
         self.smallAdjustDown    = SquareButton(30, u"\u2193")
         self.smallAdjustDown.clicked.connect(self.adjustDown)
+        self.smallAdjustDown.setIcon(QIcon(smallArrowBase.transformed(downTrans)))
 
         self.largeAdjustLeft    = SquareButton(30, u"\u219E")
         self.largeAdjustLeft.clicked.connect(self.adjustLargeLeft)
+        self.largeAdjustLeft.setIcon(QIcon(largeArrowBase.transformed(leftTrans)))
         self.largeAdjustUp      = SquareButton(30, u"\u219F")
         self.largeAdjustUp.clicked.connect(self.adjustLargeUp)
+        self.largeAdjustUp.setIcon(QIcon(largeArrowBase.transformed(upTrans)))
         self.largeAdjustRight   = SquareButton(30, u"\u21A0")
         self.largeAdjustRight.clicked.connect(self.adjustLargeRight)
+        self.largeAdjustRight.setIcon(QIcon(largeArrowBase))
         self.largeAdjustDown    = SquareButton(30, u"\u21A1")
         self.largeAdjustDown.clicked.connect(self.adjustLargeDown)
+        self.largeAdjustDown.setIcon(QIcon(largeArrowBase.transformed(downTrans)))
 
         self.adjustHome         = SquareButton(30, u"\u2302")
         self.adjustHome.clicked.connect(self.home)
+        self.adjustHome.setIcon(QIcon(stowBase))
 
         self.largeAdjustLabel = QLabel(self.strings.PTT_LargeAdjustLabel)
         self.largeAdjustVal = SquareLineEdit(30, self.config.PTT_LargeAdjustVal)
 
 
-        adjustPTULayout.addWidget(self.smallAdjustLeft,  2, 1)
-        adjustPTULayout.addWidget(self.smallAdjustUp,    1, 2)
-        adjustPTULayout.addWidget(self.smallAdjustRight, 2, 3)
-        adjustPTULayout.addWidget(self.smallAdjustDown,  3, 2)
+        adjustPTULayoutLine1.addWidget(self.largeAdjustUp)
 
-        adjustPTULayout.addWidget(self.largeAdjustLeft,  2, 0)
-        adjustPTULayout.addWidget(self.largeAdjustUp,    0, 2)
-        adjustPTULayout.addWidget(self.largeAdjustRight, 2, 4)
-        adjustPTULayout.addWidget(self.largeAdjustDown,  4, 2)
+        adjustPTULayoutLine2.addWidget(self.smallAdjustUp)
 
-        adjustPTULayout.addWidget(self.adjustHome,  2, 2)
-        adjustPTULayout.addWidget(self.largeAdjustLabel, 5, 0, 4, 0)
-        adjustPTULayout.addWidget(self.largeAdjustVal, 5, 4)
+        adjustPTULayoutLine3.addWidget(self.largeAdjustLeft)
+        adjustPTULayoutLine3.addWidget(self.smallAdjustLeft)
+        adjustPTULayoutLine3.addWidget(self.adjustHome)
+        adjustPTULayoutLine3.addWidget(self.smallAdjustRight)
+        adjustPTULayoutLine3.addWidget(self.largeAdjustRight)
+
+        adjustPTULayoutLine4.addWidget(self.smallAdjustDown)
+
+        adjustPTULayoutLine5.addWidget(self.largeAdjustDown)
+
+        adjustPTULayoutLine6.addWidget(self.largeAdjustLabel)
+        adjustPTULayoutLine6.addWidget(self.largeAdjustVal)
+
+        adjustPTULayout.addLayout(adjustPTULayoutLine1)
+        adjustPTULayout.addLayout(adjustPTULayoutLine2)
+        adjustPTULayout.addLayout(adjustPTULayoutLine3)
+        adjustPTULayout.addLayout(adjustPTULayoutLine4)
+        adjustPTULayout.addLayout(adjustPTULayoutLine5)
+        adjustPTULayout.addStretch()
+        adjustPTULayout.addLayout(adjustPTULayoutLine6)
 
         currentValLayout = QHBoxLayout()
 
         self.currentVal = QLabel()
-        self.refreshButton = QPushButton(u"\u21BB")
+        self.refreshButton = QPushButton()
         self.refreshButton.clicked.connect(self.updatePTUVals)
-
-        self.sideView = QLabel("Tilt")
-        self.topView = QLabel("Pan")
-
-        self.sideView.setAlignment(Qt.AlignCenter)
-        self.topView.setAlignment(Qt.AlignCenter)
-
-        self.sideViewPixmapBase = QPixmap("images/camera_side.png")
-        self.topViewPixmapBase = QPixmap("images/camera_top.png")
-
-        self.sideView.setPixmap(self.sideViewPixmapBase)
-        self.topView.setPixmap(self.topViewPixmapBase)
-
-        self.updatePTUVals()
+        self.refreshButton.setIcon(QIcon(refreshBase))
 
         leftValLayout = QHBoxLayout()
 
-        currentValLayout.addWidget(self.currentVal)
-        currentValLayout.addWidget(self.sideView)
-        currentValLayout.addWidget(self.topView)
+        currentValLayout.addWidget(self.currentVal, stretch=1)
         currentValLayout.addWidget(self.refreshButton)
 
         currentValGroup = QGroupBox(self.strings.PTT_CurrTitle)
@@ -149,11 +167,16 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.preview.setStyleSheet("border: 1px solid black; padding: 2px")
 
         #self.refreshPreview = SquareButton(30, u"\u21BB")
-        self.refreshPreview = QPushButton(u"\u21BB")
+        self.refreshPreview = QPushButton()
+        self.refreshPreview.clicked.connect(self.updatePreview)
+        self.refreshPreview.setIcon(QIcon(refreshBase))
         self.refreshCheckbox = QCheckBox(self.strings.PTT_AutoRefresh)
+        self.refreshCombo = QComboBox()
+        self.refreshCombo.addItems(self.config.cameras)
 
         refreshPreviewLayout = QHBoxLayout()
         refreshPreviewLayout.addWidget(self.refreshPreview)
+        refreshPreviewLayout.addWidget(self.refreshCombo)
         refreshPreviewLayout.addStretch()
         refreshPreviewLayout.addWidget(self.refreshCheckbox)
 
@@ -166,16 +189,23 @@ class Tab(QWidget): # HACK: Make class load dynamically
         #print(self.preview.width())
         #self.preview.setMinimumSize(QSize(self.preview.width(), self.preview.width()))
 
-        layout = QGridLayout()
+        topLayout = QHBoxLayout()
+        bottomLayout = QHBoxLayout()
 
-        layout.addWidget(currentValGroup, 0, 0)
-        layout.addWidget(previewGroup, 1, 0)
-        layout.addWidget(setGroup, 0, 1)
-        layout.addWidget(adjustGroup, 1, 1)
+        topLayout.addWidget(currentValGroup)
+        bottomLayout.addWidget(previewGroup)
+        topLayout.addWidget(setGroup)
+        bottomLayout.addWidget(adjustGroup)
         #blankItem = QWidget()
         #layout.addWidget(blankItem, 2, 2)
 
+        layout = QVBoxLayout()
+        layout.addLayout(topLayout)
+        layout.addLayout(bottomLayout)
+
         self.setLayout(layout)
+
+        self.updatePTUVals()
 
     def setPan(self):
         ptu = self.api.pancam.ptu
@@ -232,17 +262,16 @@ class Tab(QWidget): # HACK: Make class load dynamically
 
     def updatePTUVals(self):
         self.currentVal.setText("%s:\t%.3f\n%s:\t%.3f" % (self.strings.PTT_Pan, self.api.pancam.ptu.pan,
-                                                    self.strings.PTT_Tilt, self.api.pancam.ptu.tilt))
+                                                self.strings.PTT_Tilt, self.api.pancam.ptu.tilt))
+        if self.refreshCheckbox.isChecked():
+            self.updatePreview()
 
-        panTransform = QTransform()
-        panTransform.rotate(-self.api.pancam.ptu.pan)
-        topViewPixmap = self.topViewPixmapBase.transformed(panTransform)
-        self.topView.setPixmap(topViewPixmap)
-
-        tiltTransform = QTransform()
-        tiltTransform.rotate(-self.api.pancam.ptu.tilt)
-        sideViewPixmap = self.sideViewPixmapBase.transformed(tiltTransform)
-        self.sideView.setPixmap(sideViewPixmap)
+    def updatePreview(self):
+        cameraNumber = self.refreshCombo.currentIndex()
+        camera = self.api.pancam.cameras[cameraNumber]
+        self.image = camera.get_image()
+        pixmap = QPixmap.fromImage(ImageQt(self.image.as_pil_image()).scaled(self.preview.size(), Qt.KeepAspectRatio))
+        self.preview.setPixmap(pixmap)
 
 class SquareButton(QToolButton):
     """docstring for SquareButton."""
@@ -261,8 +290,8 @@ class SquareButton(QToolButton):
     def heightForWidth(self, width):
         return self.width()
 
-    #def sizeHint(self):
-    #    return QSize(self.size, self.size)
+#   def sizeHint(self):
+#        return QSize(self.size, self.size)
 
 class SquareLineEdit(QLineEdit):
     """docstring for SquareButton."""
@@ -279,7 +308,7 @@ class SquareLineEdit(QLineEdit):
         #    self.setMinimumSize(sizeHint)
 
     def heightForWidth(self, width):
-        return width
+        return self.width()
 
 #    def sizeHint(self):
 #        return QSize(self.size, self.size)
@@ -291,7 +320,7 @@ class SquareLabel(QLabel):
         super(SquareLabel, self).__init__(text)
         #self.size = size
 
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
         #sizeHint = self.sizeHint()
@@ -299,7 +328,7 @@ class SquareLabel(QLabel):
         #    self.setMinimumSize(sizeHint)
 
     def heightForWidth(self, width):
-        return width
+        return self.width()
 
-    #def sizeHint(self):
-    #    return QSize(self.size, self.size)
+#    def sizeHint(self):
+#        return QSize(self.size, self.size)

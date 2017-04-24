@@ -55,8 +55,8 @@ class ACE_NG_APP(QMainWindow):
         self.title = self.strings.appName
         #self.left = 10
         #self.top = 10
-        self.width = 400
-        self.height = 250
+        self.width = 100
+        self.height = 100
         self.setWindowTitle(self.title)
         #self.setGeometry(self.left, self.top, self.width, self.height)
 
