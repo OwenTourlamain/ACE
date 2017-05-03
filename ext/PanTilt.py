@@ -192,9 +192,9 @@ class Tab(QWidget): # HACK: Make class load dynamically
         topLayout = QHBoxLayout()
         bottomLayout = QHBoxLayout()
 
-        topLayout.addWidget(currentValGroup)
-        bottomLayout.addWidget(previewGroup)
-        topLayout.addWidget(setGroup)
+        topLayout.addWidget(currentValGroup, stretch=1)
+        topLayout.addWidget(previewGroup)
+        bottomLayout.addWidget(setGroup)
         bottomLayout.addWidget(adjustGroup)
         #blankItem = QWidget()
         #layout.addWidget(blankItem, 2, 2)

@@ -64,6 +64,12 @@ class DynamicProperties(object):
     def update(self, dirs, match=None):
 
         for dir in dirs:
+            if not os.path.isdir(dir):
+                try:
+                    os.makedirs(dir)
+                except OSError:
+                    print("Error creating directory '%s' skipping..." % dir)
+                    continue
             for file in os.listdir(dir):
                 if file.endswith(".json"):
                     if match:
