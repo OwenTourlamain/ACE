@@ -54,6 +54,12 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.HRCcaptureButton = QPushButton(self.strings.SIT_HRCcap, self)
         self.HRCcaptureButton.clicked.connect(self.HRCcapture)
 
+        self.HRCInvisibleButton = QComboBox()
+        sizePolicy = QSizePolicy()
+        sizePolicy.setRetainSizeWhenHidden(True)
+        self.HRCInvisibleButton.setSizePolicy(sizePolicy)
+        self.HRCInvisibleButton.hide()
+
         self.HRCsaveButton = QPushButton(self.strings.SIT_Save, self)
         self.HRCsaveButton.clicked.connect(self.HRCsave)
         self.HRCsaveButton.setDisabled(True)
@@ -63,6 +69,7 @@ class Tab(QWidget): # HACK: Make class load dynamically
         #self.HRCpreview.setFixedHeight(self.config.preview_size)
         self.HRCpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         imageLayout.addWidget(self.HRCpreview)
+        HRCControlsLayout.addWidget(self.HRCInvisibleButton)
         HRCControlsLayout.addWidget(self.HRCcaptureButton)
         HRCControlsLayout.addWidget(self.HRCsaveButton)
         #layout.addStretch(1)
