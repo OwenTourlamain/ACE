@@ -30,7 +30,10 @@ class ACE_NG(QMainWindow):
         # Simple parser, just adds verbosity for now
         parser = argparse.ArgumentParser(add_help=False)
         parser.add_argument("-v", "--verbose", action="store_true")
-        self.verbose = parser.parse_args().verbose
+        parser.add_argument("-f", "--faupe", action="store_true")
+        args = parser.parse_args()
+        self.verbose = args.verbose
+        self.skipServer = args.faupe
 
         # Populate the config and strings objects
         # TODO Grap exceptions from broken files
@@ -44,12 +47,17 @@ class ACE_NG(QMainWindow):
         # This will be a reference to the fake server if we need to run that
         self.faupe = None
 
+
         # Try to connect to the server, if it fails either launch the fake server, or quit
-        try:
-            api.system.connect(agent_addr=self.config.aupe_addr)
-        except ConnectionRefusedError:
+        if self.skipServer:
             self.runFAUPE()
             api.system.connect(agent_addr=self.config.fake_aupe_addr)
+        else:
+            try:
+                api.system.connect(agent_addr=self.config.aupe_addr)
+            except ConnectionRefusedError:
+                self.runFAUPE()
+                api.system.connect(agent_addr=self.config.fake_aupe_addr)
 
         # Init the API
         api.pancam.setup_cameras()
@@ -85,10 +93,12 @@ class ACE_NG(QMainWindow):
         event.accept()
 
     def runFAUPE(self):
-        # Check if we should run the server or quit
-        response = QMessageBox.question(self, self.strings.ConnectionFailedTitle, self.strings.ConnectionFailed % self.config.aupe_addr, QMessageBox.Yes, QMessageBox.No)
+        # Check if we should run the server or quit]
+        response = None
+        if not self.skipServer:
+            response = QMessageBox.question(self, self.strings.ConnectionFailedTitle, self.strings.ConnectionFailed % self.config.aupe_addr, QMessageBox.Yes, QMessageBox.No)
 
-        if response == QMessageBox.Yes:
+        if response == QMessageBox.Yes or self.skipServer:
             # Need to change directory so faupe doesn't fall over
             oldPath = os.getcwd()
             basePath = os.path.dirname(os.path.realpath(sys.argv[0]))

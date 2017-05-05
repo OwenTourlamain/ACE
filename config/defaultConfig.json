@@ -42,5 +42,21 @@
         "11: Panchromatic"
     ],
 
+    "AeAlgs": [
+      "Mean",
+      "Range"
+    ],
+
+    "AeModes": [
+      "None",
+      "Server",
+      "Camera"
+    ],
+
+    "Metering": [
+      "Full",
+      "ROI"
+    ],
+
     "PTT_LargeAdjustVal": "10"
 }

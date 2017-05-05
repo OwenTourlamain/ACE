@@ -100,11 +100,75 @@ class Tab(QWidget):
         # Right hand column, shows/edits details for each capture, plus the all important go button.
         self.captureName = QLineEdit()
         self.captureName.setEnabled(False)
+
         self.cameraTypeComboBox = QComboBox()
         self.cameraTypeComboBox.currentIndexChanged.connect(self.updateFilters)
         self.cameraTypeComboBox.setEnabled(False)
+        self.cameraTypeComboBox.setEnabled(False)
+
         self.filterComboBox = QComboBox()
         self.filterComboBox.setEnabled(False)
+
+        self.captureAeMode = QComboBox()
+        self.captureAeMode.currentIndexChanged.connect(self.updateAeMode)
+        self.captureAeMode.setEnabled(False)
+
+        self.captureAeAlg = QComboBox()
+        self.captureAeAlg.addItems(self.config.AeAlgs)
+        self.captureAeAlg.setEnabled(False)
+
+        self.captureAeTarget = QLineEdit()
+        self.captureAeTarget.setValidator(QDoubleValidator())
+        self.captureAeTarget.setEnabled(False)
+
+        self.captureAeTol = QLineEdit()
+        self.captureAeTol.setValidator(QDoubleValidator())
+        self.captureAeTol.setEnabled(False)
+
+        self.captureAeMax = QLineEdit()
+        self.captureAeMax.setValidator(QDoubleValidator())
+        self.captureAeMax.setEnabled(False)
+
+        self.captureAeMin = QLineEdit()
+        self.captureAeMin.setValidator(QDoubleValidator())
+        self.captureAeMin.setEnabled(False)
+
+        self.captureAeRate = QLineEdit()
+        self.captureAeRate.setValidator(QDoubleValidator())
+        self.captureAeRate.setEnabled(False)
+
+        self.captureGain = QLineEdit()
+        self.captureGain.setValidator(QIntValidator())
+        self.captureGain.setEnabled(False)
+
+        self.captureShutter = QLineEdit()
+        self.captureShutter.setValidator(QDoubleValidator())
+        self.captureShutter.setEnabled(False)
+
+        self.captureExposure = QLineEdit()
+        self.captureExposure.setValidator(QDoubleValidator())
+        self.captureExposure.setEnabled(False)
+
+        self.captureMetering = QComboBox()
+        self.captureMetering.currentIndexChanged.connect(self.updateMetering)
+        self.captureMetering.setEnabled(False)
+
+        self.captureRoiX = QLineEdit()
+        self.captureRoiX.setValidator(QDoubleValidator())
+        self.captureRoiX.setEnabled(False)
+
+        self.captureRoiY = QLineEdit()
+        self.captureRoiY.setValidator(QDoubleValidator())
+        self.captureRoiY.setEnabled(False)
+
+        self.captureRoiWidth = QLineEdit()
+        self.captureRoiWidth.setValidator(QDoubleValidator())
+        self.captureRoiWidth.setEnabled(False)
+
+        self.captureRoiHeight = QLineEdit()
+        self.captureRoiHeight.setValidator(QDoubleValidator())
+        self.captureRoiHeight.setEnabled(False)
+
         self.captureUpdateButton = QPushButton(self.strings.MIT_Update)
         self.captureUpdateButton.clicked.connect(self.updateCapture)
         self.captureUpdateButton.setEnabled(False)
@@ -113,6 +177,33 @@ class Tab(QWidget):
         captureDetailsLayout.addRow(self.strings.MIT_Name, self.captureName)
         captureDetailsLayout.addRow(self.strings.MIT_CameraType, self.cameraTypeComboBox)
         captureDetailsLayout.addRow(self.strings.MIT_Filter, self.filterComboBox)
+        captureDetailsLayout.addRow(self.strings.MIT_Shutter, self.captureShutter)
+        captureDetailsLayout.addRow(self.strings.MIT_Exposure, self.captureExposure)
+        captureDetailsLayout.addRow(self.strings.MIT_Gain, self.captureGain)
+        captureDetailsLayout.addRow(self.strings.MIT_AeMode, self.captureAeMode)
+
+        captureAeLayout = QFormLayout()
+        captureAeLayout.addRow(self.strings.MIT_AeAlg, self.captureAeAlg)
+        captureAeLayout.addRow(self.strings.MIT_AeTarget, self.captureAeTarget)
+        captureAeLayout.addRow(self.strings.MIT_AeTol, self.captureAeTol)
+        captureAeLayout.addRow(self.strings.MIT_AeMax, self.captureAeMax)
+        captureAeLayout.addRow(self.strings.MIT_AeMin, self.captureAeMin)
+        captureAeLayout.addRow(self.strings.MIT_AeRate, self.captureAeRate)
+        self.captureAeGroup = QGroupBox(self.strings.MIT_Ae)
+        self.captureAeGroup.setLayout(captureAeLayout)
+        self.captureAeGroup.setHidden(True)
+        captureDetailsLayout.addWidget(self.captureAeGroup)
+        captureDetailsLayout.addRow(self.strings.MIT_MeteringMode, self.captureMetering)
+        captureMeteringLayout = QFormLayout()
+        captureMeteringLayout.addRow(self.strings.MIT_RoiX, self.captureRoiX)
+        captureMeteringLayout.addRow(self.strings.MIT_RoiY, self.captureRoiY)
+        captureMeteringLayout.addRow(self.strings.MIT_RoiWidth, self.captureRoiWidth)
+        captureMeteringLayout.addRow(self.strings.MIT_RoiHeight, self.captureRoiHeight)
+        self.captureMeteringGroup = QGroupBox(self.strings.MIT_Metering)
+        self.captureMeteringGroup.setLayout(captureMeteringLayout)
+        self.captureMeteringGroup.setHidden(True)
+        captureDetailsLayout.addWidget(self.captureMeteringGroup)
+
         captureDetailsLayout.addRow(self.captureUpdateButton)
 
         captureDetailsGroup = QGroupBox(self.strings.MIT_CaptureDetailsTitle)
@@ -141,6 +232,18 @@ class Tab(QWidget):
         layout.addLayout(captureSaveLayout)
 
         self.setLayout(layout)
+
+    def updateAeMode(self, current):
+        if current == 1:
+            self.captureAeGroup.setHidden(False)
+        else:
+            self.captureAeGroup.setHidden(True)
+
+    def updateMetering(self, current):
+        if current == 1:
+            self.captureMeteringGroup.setHidden(False)
+        else:
+            self.captureMeteringGroup.setHidden(True)
 
     def newPositionButton(self):
         dialog = PositionDialog(self.strings)
@@ -247,7 +350,24 @@ class Tab(QWidget):
         self.cameraTypeComboBox.setCurrentText(self.config.cameras[currentItem.camera])
         self.cameraTypeComboBox.setEnabled(True)
         self.filterComboBox.setEnabled(True)
+        self.captureAeMode.setEnabled(True)
+        self.captureAeAlg.setEnabled(True)
+        self.captureAeTarget.setEnabled(True)
+        self.captureAeTol.setEnabled(True)
+        self.captureAeMax.setEnabled(True)
+        self.captureAeMin.setEnabled(True)
+        self.captureAeRate.setEnabled(True)
+        self.captureGain.setEnabled(True)
+        self.captureShutter.setEnabled(True)
+        self.captureExposure.setEnabled(True)
+        self.captureMetering.setEnabled(True)
+        self.captureRoiX.setEnabled(True)
+        self.captureRoiY.setEnabled(True)
+        self.captureRoiWidth.setEnabled(True)
+        self.captureRoiHeight.setEnabled(True)
         self.captureUpdateButton.setEnabled(True)
+        self.captureMetering.addItems(self.config.Metering)
+        self.captureAeMode.addItems(self.config.AeModes)
 
     def updatePosition(self):
         # Ignore duplicates, need to make a whole item to compare to
@@ -275,8 +395,37 @@ class Tab(QWidget):
         self.currentCapture.name = self.captureName.text()
         self.currentCapture.camera = self.cameraTypeComboBox.currentIndex()
         self.currentCapture.filter = self.filterComboBox.currentIndex()
+        self.currentCapture.gain = self.blankInt(self.captureGain.text())
+        self.currentCapture.shutter = self.blankFloat(self.captureShutter.text())
+        self.currentCapture.shutter_target = self.blankFloat(self.captureExposure.text())
+        roi = (
+            self.blankInt(self.captureRoiX.text()),
+            self.blankInt(self.captureRoiY.text()),
+            self.blankInt(self.captureRoiWidth.text()),
+            self.blankInt(self.captureRoiHeight.text())
+        )
+        self.currentCapture.roi = roi
+        self.currentCapture.aeMode = self.captureAeMode.currentIndex()
+        self.currentCapture.aeAlg = self.captureAeAlg.currentIndex()
+        self.currentCapture.aeTarget = self.blankFloat(self.captureAeTarget.text())
+        self.currentCapture.aeTol = self.blankFloat(self.captureAeTol.text())
+        self.currentCapture.aeMax = self.blankFloat(self.captureAeMax.text())
+        self.currentCapture.aeMin = self.blankFloat(self.captureAeMin.text())
+        self.currentCapture.aeRate = self.blankFloat(self.captureAeRate.text())
         # Make sure we can actually see these changes
         self.currentCapture.updateText()
+
+    def blankInt(self, val):
+        if val == "":
+            return 0
+        else:
+            return int(val)
+
+    def blankFloat(self, val):
+        if val == "":
+            return 0.0
+        else:
+            return float(val)
 
     def blankPosition(self):
         # Disable these items so it's obvious they don't do anything for now
@@ -300,7 +449,26 @@ class Tab(QWidget):
         self.cameraTypeComboBox.setEnabled(False)
         self.filterComboBox.clear()
         self.filterComboBox.setEnabled(False)
+        self.captureAeMode.setEnabled(False)
+        self.captureAeAlg.setEnabled(False)
+        self.captureAeTarget.setEnabled(False)
+        self.captureAeTol.setEnabled(False)
+        self.captureAeMax.setEnabled(False)
+        self.captureAeMin.setEnabled(False)
+        self.captureAeRate.setEnabled(False)
+        self.captureGain.setEnabled(False)
+        self.captureShutter.setEnabled(False)
+        self.captureExposure.setEnabled(False)
+        self.captureMetering.setEnabled(False)
+        self.captureRoiX.setEnabled(False)
+        self.captureRoiY.setEnabled(False)
+        self.captureRoiWidth.setEnabled(False)
+        self.captureRoiHeight.setEnabled(False)
         self.captureUpdateButton.setEnabled(False)
+        self.captureAeGroup.setHidden(True)
+        self.captureMeteringGroup.setHidden(True)
+        self.captureAeMode.clear()
+        self.captureMetering.clear()
 
     def updateFilters(self, index):
         # Qt doesn't mind if we use clear() here, still no clue why thats an issue,
@@ -374,10 +542,25 @@ class PanoramaSaver(object):
             )
             xmlPosition = xml.Element("position", attrib=attributes)
             for capture in position.captures:
+                (croix, croiy, croiw, croih) = capture.roi
                 capAttributes = dict(
                     name=capture.name,
                     camera=str(capture.camera),
-                    filter=str(capture.filter)
+                    filter=str(capture.filter),
+                    gain = str(capture.gain),
+                    shutter = str(capture.shutter),
+                    shutter_target = str(capture.shutter_target),
+                    roix = str(croix),
+                    roiy = str(croiy),
+                    roiw = str(croiw),
+                    roih = str(croih),
+                    aeMode = str(capture.aeMode),
+                    aeAlg = str(capture.aeAlg),
+                    aeTarget = str(capture.aeTarget),
+                    aeTol = str(capture.aeTol),
+                    aeMax = str(capture.aeMax),
+                    aeMin = str(capture.aeMin),
+                    aeRate = str(capture.aeRate),
                 )
                 xmlCapture = xml.Element("capture", attrib=capAttributes)
                 xmlPosition.append(xmlCapture)
@@ -398,11 +581,26 @@ class PanoramaSaver(object):
                 name = xmlCapture.get("name")
                 camera = int(xmlCapture.get("camera"))
                 filter = int(xmlCapture.get("filter"))
-                capture = Capture(name, camera, filter)
+                gain = int(xmlCapture.get("filter"))
+                shutter = float(xmlCapture.get("filter"))
+                shutter_target = float(xmlCapture.get("filter"))
+                roix = int(xmlCapture.get("filter"))
+                roiy = int(xmlCapture.get("filter"))
+                roiw = int(xmlCapture.get("filter"))
+                roih = int(xmlCapture.get("filter"))
+                aeMode = float(xmlCapture.get("filter"))
+                aeAlg = float(xmlCapture.get("filter"))
+                aeTarget = float(xmlCapture.get("filter"))
+                aeTol = float(xmlCapture.get("filter"))
+                aeMax = float(xmlCapture.get("filter"))
+                aeMin = float(xmlCapture.get("filter"))
+                aeRate = float(xmlCapture.get("filter"))
+                capture = Capture(name, camera, filter, gain, shutter, shutter_target,
+                                  roix, roiy, roiw, roih, aeMode, aeAlg, aeTarget,
+                                  aeTol, aeMax, aeMin, aeRate)
                 position.captures.append(capture)
             panorama.add(position)
         return panorama
-
 
 class PositionDialog(QDialog):
     """docstring for PositionDialog."""
@@ -568,7 +766,33 @@ class CapturePanorama(QDialog):
     def capture(self, capture, position):
         camera = self.api.pancam.cameras[capture.camera]
         camera.filter = capture.filter
-        image = camera.get_image()
+        camera.gain = capture.gain
+        camera.shutter = capture.shutter
+        camera.shutter_target = capture.shutter_target
+        if capture.roi[2] and capture.roi[3]:
+            camera.ae_meter_region = 1
+            camera.roi = capture.roi
+        else:
+            camera.ae_meter_region = 0
+
+        if capture.aeMode == 0:
+            serverAE = False
+            camera.shutter_mode = 0
+        elif capture.aeMode == 1:
+            serverAE = True
+            camera.shutter_mode = 0
+        else:
+            serverAE = False
+            camera.shutter_mode = 1
+
+        ##self.aeAlg = capture.aeAlg ask!!
+        camera.ae_target = capture.aeTarget
+        camera.ae_tolerance = capture.aeTol
+        camera.ae_max_shutter = capture.aeMax
+        camera.ae_min_shutter = capture.aeMin
+        camera.ae_adjust_rate = capture.aeRate
+
+        image = camera.get_image(ae=serverAE)
         # Create a file/folder structure to store the images
         fileName = "%s_%d_%d.png" % (capture.name, capture.camera, capture.filter)
         if not os.path.isdir(os.path.join(self.panorama.path, str(position))):
@@ -652,11 +876,25 @@ class PanoramaPosition(QListWidgetItem):
 
 class Capture(QListWidgetItem):
     """docstring for Capture."""
-    def __init__(self, name, camera=0, filter=0):
+    def __init__(self, name, camera=0, filter=0, gain=0.0, shutter=0.0,
+                 shutter_target=0.0, roix=0, roiy=0, roiw=0, roih=0, aeMode=0,
+                 aeAlg=0, aeTarget=0.0, aeTol=0.0, aeMax=0.0, aeMin=0.0, aeRate=0.0):
         super(Capture, self).__init__()
         self.name = name
         self.camera = camera
         self.filter = filter
+        self.gain = gain
+        self.shutter = shutter
+        self.shutter_target = shutter_target
+        self.roi = (roix, roiy, roiw, roih)
+        self.aeMode = aeMode
+        self.aeAlg = aeAlg
+        self.aeTarget = aeTarget
+        self.aeTol = aeTol
+        self.aeMax = aeMax
+        self.aeMin = aeMin
+        self.aeRate = aeRate
+
         self.updateText()
 
     def updateText(self):
