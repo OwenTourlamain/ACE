@@ -1,114 +1,112 @@
 #!/usr/bin/python3.4
 
-# -- ACE-NG - User Interface and Control for Aberystwyth University PanCam Emulator --
+# -- ace-ng - User Interface and Control for Aberystwyth University PanCam Emulator --
 # Author:     Owen Tourlamain
 # Supervisor: Dr. Laurence Tyler
 
 import os
 import sys
 import json
+import subprocess
+import time
+import argparse
+import glob
 
-#print(os.path.abspath(os.path.dirname(__file__)) + os.sep + "lib")
+# Add /lib to path so we can import our extras
 sys.path.append(os.path.abspath(os.path.dirname(__file__)) + os.sep + "lib")
 from lib.dynamicProperties import DynamicProperties
 from lib.au import pancam_api as api
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PIL import ImageQt
-#from lib import sipconfig
-#from lib import PyQt5
-#import sip
-#import PyQt5
 
 # TODO: Clean imports
-# TODO: Make config use seperate class w/ attributes like strings
 
-class ACE_NG_CORE(object):
-    """docstring for ACE_NG."""
+class ACE_NG(QMainWindow):
+    """docstring for ACE_NG_APP."""
 
     def __init__(self):
+        super().__init__()
 
-        pass#super(ACE_NG, self).__init__()
+        # Simple parser, just adds verbosity for now
+        parser = argparse.ArgumentParser(add_help=False)
+        parser.add_argument("-v", "--verbose", action="store_true")
+        self.verbose = parser.parse_args().verbose
 
-    def run(self):
-
-        self.verbose = True # TODO: Make this a commandline flag
+        # Populate the config and strings objects
+        # TODO Grap exceptions from broken files
         self.config = DynamicProperties(os.path.normpath("config/defaultConfig.json"), self.verbose, cleanPaths=True) # TODO: Remove hardcoded paths
         self.strings = DynamicProperties(os.path.normpath("lang/en-GB.json"), self.verbose)
         self.config.update(["config", self.config.usr_cfg_dir])
         self.strings.update(["lang", self.config.usr_lang_dir], self.config.lang_pref)
-        self.initMainWindow()
 
-    def initMainWindow(self):
-        ace_ng_app = QApplication(sys.argv)
-        ex = ACE_NG_APP(self.strings, self.config, self.verbose)
-        sys.exit(ace_ng_app.exec_())
+        self.setWindowTitle(self.strings.appName)
 
-class ACE_NG_APP(QMainWindow):
-    """docstring for ACE_NG_APP."""
+        # This will be a reference to the fake server if we need to run that
+        self.faupe = None
 
-    def __init__(self, strings, config, verbose):
-        super().__init__()
-        self.verbose = verbose
-        self.strings = strings
-        self.config = config
-        self.title = self.strings.appName
-        #self.left = 10
-        #self.top = 10
-        self.width = 100
-        self.height = 100
-        self.setWindowTitle(self.title)
-        #self.setGeometry(self.left, self.top, self.width, self.height)
+        # Try to connect to the server, if it fails either launch the fake server, or quit
+        try:
+            api.system.connect(agent_addr=self.config.aupe_addr)
+        except ConnectionRefusedError:
+            self.runFAUPE()
+            api.system.connect(agent_addr=self.config.fake_aupe_addr)
 
-        exitAct = QAction(QIcon('exit.png'), 'Exit', self)
-        exitAct.setShortcut('Ctrl+Q')
-        exitAct.setStatusTip('Exit application')
-        exitAct.triggered.connect(qApp.quit)
-
-        runFAUPEAct = QAction(QIcon('exit.png'), 'Run AUPE Server', self)
-        runFAUPEAct.setStatusTip('Exit application')
-        runFAUPEAct.triggered.connect(self.runFAUPE)
-        runFAUPEAct.setDisabled(True)
-
-        killFAUPEAct = QAction(QIcon('exit.png'), 'Kill AUPE Server', self)
-        killFAUPEAct.setStatusTip('Kill Fake AUPE Server')
-        killFAUPEAct.triggered.connect(qApp.quit)
-        killFAUPEAct.setDisabled(True)
-
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('File')
-        fileMenu.addAction(exitAct)
-
-        runMenu = menubar.addMenu('Fake AUPE')
-        runMenu.addAction(runFAUPEAct)
-        runMenu.addAction(killFAUPEAct)
-
-        tabPane = QTabWidget()
-
-        api.system.connect(agent_addr=config.aupe_addr)
+        # Init the API
         api.pancam.setup_cameras()
 
-        tabList = ["SingleImageCap", "MultiImageCap", "PanTilt"] # TODO: Make this dynamic and configurable
+        # Dynamically grab the tab names
+        tabPane = QTabWidget()
+        oldPath = os.getcwd()
+        basePath = os.path.dirname(os.path.realpath(sys.argv[0]))
+        extPath = os.path.join(basePath, "ext")
+        os.chdir(extPath)
+        tabList = glob.glob("*.py")
+        os.chdir(oldPath)
+        tabList.remove("__init__.py")
+        tabList.sort()
+
+        # Load in each of the tabs
         for tabName in tabList:
-            exec("from ext.%s import Tab" % tabName) # HACK: Make class load dynamically
+            # Need to strip the ''.py' from the end of each name
+            tabName = tabName.replace(".py", "")
+            exec("from ext.%s import Tab" % tabName)
             tab = sys.modules["ext.%s" % tabName].Tab(self.config, self.strings, api, self.verbose)
             tabPane.addTab(tab, tab.title)
-        self.scrollArea = QScrollArea()
-        #self.scrollArea.setWidget(tabPane)
-        #self.setCentralWidget(self.scrollArea)
+
         self.setCentralWidget(tabPane)
 
         self.show()
 
-    def runFAUPE(self): # TODO: Find a way to load this at runtime, display in own window?
-        with open("bin/faupe.py") as faupe:
-            #print(faupe)
-            exec(faupe.read())
-
     def closeEvent(self, event):
         api.system.disconnect()
+        # Kill the fake server if it is running
+        if self.faupe:
+            self.faupe.terminate()
         event.accept()
 
+    def runFAUPE(self):
+        # Check if we should run the server or quit
+        response = QMessageBox.question(self, self.strings.ConnectionFailedTitle, self.strings.ConnectionFailed % self.config.aupe_addr, QMessageBox.Yes, QMessageBox.No)
+
+        if response == QMessageBox.Yes:
+            # Need to change directory so faupe doesn't fall over
+            oldPath = os.getcwd()
+            basePath = os.path.dirname(os.path.realpath(sys.argv[0]))
+            binPath = os.path.join(basePath, "bin")
+            os.chdir(binPath)
+            if self.verbose:
+                # Needs python2, would be nice to port to python3 someday
+                self.faupe = subprocess.Popen(["python2", "faupe.py"])
+            else:
+                self.faupe = subprocess.Popen(["python2", "faupe.py"], stdout=subprocess.DEVNULL)
+            os.chdir(oldPath)
+            # Wait for the server to be responsive
+            time.sleep(1)
+        else:
+            sys.exit(0)
+
 if __name__ == "__main__":
-    ace_ng = ACE_NG_CORE()
-    ace_ng.run()
+
+    ace_ng_app = QApplication(sys.argv)
+    ex = ACE_NG()
+    sys.exit(ace_ng_app.exec_())

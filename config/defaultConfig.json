@@ -1,11 +1,11 @@
 {
     "usr_cfg_dir":  "~/.ace-ng/config",
     "usr_lib_dir":  "~/.ace-ng/lib",
-    "usr_ext_dir":  "~/.ace-ng/ext",
     "usr_lang_dir": "~/.ace-ng/lang",
     "lang_pref":    "en-GB",
     "preview_size": 300,
     "aupe_addr": "127.0.0.1",
+    "fake_aupe_addr": "127.0.0.1",
     "cameras": [
         "LWAC",
         "RWAC",

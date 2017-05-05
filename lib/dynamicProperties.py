@@ -1,4 +1,4 @@
-# -- STRINGS.PY - Dynamic language library for ACE-NG --
+# -- dynamicProperties.py - Dynamic attribute library for ACE-NG --
 # Author:     Owen Tourlamain
 # Supervisor: Dr. Laurence Tyler
 
@@ -13,11 +13,11 @@ class DynamicProperties(object):
     Libarary for ace-ng that enables dynamic loading of properties from JSON
     files.
 
-    from lib.dynamicProperties import DynamicProperties
-    strings = DynamicProperties("lang/en-GB.json")
-    print(strings.appName)
+        from lib.dynamicProperties import DynamicProperties
+        strings = DynamicProperties("lang/en-GB.json")
+        print(strings.appName)
 
-    ----
+    # move to different file
     Language files should be stored in ACE-NG/lang/ or in the user configuable
     location (defaults to ~/.ace-ng/lang/).
 

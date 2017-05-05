@@ -1,9 +1,12 @@
+# -- PanTilt.py - Pan/tilt unit control module for ace-ng  --
+# Author:     Owen Tourlamain
+# Supervisor: Dr. Laurence Tyler
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PIL.ImageQt import ImageQt
 
-class Tab(QWidget): # HACK: Make class load dynamically
+class Tab(QWidget):
     """docstring for PanTiltTab."""
 
     def __init__(self, config, strings, api, verbose):
@@ -19,12 +22,11 @@ class Tab(QWidget): # HACK: Make class load dynamically
     def initTab(self):
         setPTULayout = QGridLayout()
 
-        # TODO: use acceptableinput
         self.pan = QLineEdit(self)
-        #self.pan.setPlaceholderText(self.strings.PTT_Pan)
+        self.pan.setValidator(QDoubleValidator())
 
         self.tilt = QLineEdit(self)
-        #self.tilt.setPlaceholderText(self.strings.PTT_Tilt)
+        self.tilt.setValidator(QDoubleValidator())
 
         self.panLabel = QLabel(self.strings.PTT_Pan)
         self.pan.setSizePolicy(QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred))

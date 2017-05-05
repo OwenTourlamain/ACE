@@ -1,9 +1,13 @@
+# -- SingleImageCap.py - Camera control and image capture module for ace-ng --
+# Author:     Owen Tourlamain
+# Supervisor: Dr. Laurence Tyler
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PIL.ImageQt import ImageQt
+import os
 
-class Tab(QWidget): # HACK: Make class load dynamically
+class Tab(QWidget):
     """docstring for SingleImageCap."""
 
     def __init__(self, config, strings, api, verbose):
@@ -19,9 +23,6 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.RWACimage = None
         self.HRCimage = None
 
-        self.initTab()
-
-    def initTab(self):
         layout = QVBoxLayout()
         imageLayout = QHBoxLayout()
         LWACControlsLayout = QVBoxLayout()
@@ -41,14 +42,11 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.LWACFilterCombo.addItems(self.config.LWACFilters)
 
         self.LWACpreview = SquareLabel()
-        #self.LWACpreview.setFixedWidth(self.config.preview_size)
-        #self.LWACpreview.setFixedHeight(self.config.preview_size)
         self.LWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         imageLayout.addWidget(self.LWACpreview)
         LWACControlsLayout.addWidget(self.LWACFilterCombo)
         LWACControlsLayout.addWidget(self.LWACcaptureButton)
         LWACControlsLayout.addWidget(self.LWACsaveButton)
-        #LWACLayout.addStretch(1)
 
         # == HRC ==
         self.HRCcaptureButton = QPushButton(self.strings.SIT_HRCcap, self)
@@ -65,14 +63,11 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.HRCsaveButton.setDisabled(True)
 
         self.HRCpreview = SquareLabel()
-        #self.HRCpreview.setFixedWidth(self.config.preview_size)
-        #self.HRCpreview.setFixedHeight(self.config.preview_size)
         self.HRCpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         imageLayout.addWidget(self.HRCpreview)
         HRCControlsLayout.addWidget(self.HRCInvisibleButton)
         HRCControlsLayout.addWidget(self.HRCcaptureButton)
         HRCControlsLayout.addWidget(self.HRCsaveButton)
-        #layout.addStretch(1)
 
         # == RWAC ==
         self.RWACcaptureButton = QPushButton(self.strings.SIT_RWACcap, self)
@@ -86,30 +81,22 @@ class Tab(QWidget): # HACK: Make class load dynamically
         self.RWACFilterCombo.addItems(self.config.RWACFilters)
 
         self.RWACpreview = SquareLabel()
-        #self.RWACpreview.setFixedWidth(self.config.preview_size)
-        #self.RWACpreview.setFixedHeight(self.config.preview_size)
         self.RWACpreview.setStyleSheet("border: 1px solid black; padding: 2px")
         imageLayout.addWidget(self.RWACpreview)
         RWACControlsLayout.addWidget(self.RWACFilterCombo)
         RWACControlsLayout.addWidget(self.RWACcaptureButton)
         RWACControlsLayout.addWidget(self.RWACsaveButton)
-        #RWACLayout.addStretch(1)
-
         layout.addLayout(imageLayout)
         controlsLayout.addLayout(LWACControlsLayout)
         controlsLayout.addLayout(HRCControlsLayout)
         controlsLayout.addLayout(RWACControlsLayout)
         layout.addLayout(controlsLayout)
-        #layout.addLayout(HRCLayout)
-        #layout.addLayout(RWACLayout)
-        #layout.addStretch(1)
 
         rootLayout = QVBoxLayout()
         rootLayout.addLayout(layout)
         rootLayout.addStretch()
         self.setLayout(rootLayout)
 
-# TODO: Refactor these,  lots of repettion
     def LWACcapture(self):
         camera = self.api.pancam.cameras[0]
         camera.filter = self.LWACFilterCombo.currentIndex()
@@ -135,32 +122,31 @@ class Tab(QWidget): # HACK: Make class load dynamically
 
     def LWACsave(self):
         if self.LWACimage:
-            self.LWACimage.save_png_with_metadata("LWAC.png")
+            file = QFileDialog.getSaveFileName(self, self.strings.SIT_SaveImage, os.path.expanduser("~"), "%s (*.png)" % self.strings.SIT_Images)
+            if file[0]:
+                self.LWACimage.save_png_with_metadata(file[0])
 
     def RWACsave(self):
         if self.RWACimage:
-            self.RWACimage.save_png_with_metadata("RWAC.png")
+            file = QFileDialog.getSaveFileName(self, self.strings.SIT_SaveImage, os.path.expanduser("~"), "%s (*.png)" % self.strings.SIT_Images)
+            if file[0]:
+                self.RWACimage.save_png_with_metadata(file[0])
 
     def HRCsave(self):
         if self.HRCimage:
-            self.HRCimage.save_png_with_metadata("HRC.png")
+            file = QFileDialog.getSaveFileName(self, self.strings.SIT_SaveImage, os.path.expanduser("~"), "%s (*.png)" % self.strings.SIT_Images)
+            if file[0]:
+                self.HRCimage.save_png_with_metadata(file[0])
 
-class SquareLabel(QLabel): #TODO: Move to utility class
+class SquareLabel(QLabel):
     """docstring for SquareButton."""
 
-    def __init__(self, size=0, text=None):
+    def __init__(self):
         super(SquareLabel, self).__init__(text)
-        #self.size = size
 
         sizePolicy = QSizePolicy(QSizePolicy.Ignored , QSizePolicy.Ignored)
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
-        #sizeHint = self.sizeHint()
-        #if sizeHint.isValid():
-        #    self.setMinimumSize(sizeHint)
 
     def heightForWidth(self, width):
         return self.width()
-
-#    def sizeHint(self):
-#        return QSize(self.size, self.size)
