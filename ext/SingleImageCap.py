@@ -142,7 +142,7 @@ class SquareLabel(QLabel):
     """docstring for SquareButton."""
 
     def __init__(self):
-        super(SquareLabel, self).__init__(text)
+        super(SquareLabel, self).__init__()
 
         sizePolicy = QSizePolicy(QSizePolicy.Ignored , QSizePolicy.Ignored)
         sizePolicy.setHeightForWidth(True)

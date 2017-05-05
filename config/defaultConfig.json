@@ -4,7 +4,7 @@
     "usr_lang_dir": "~/.ace-ng/lang",
     "lang_pref":    "en-GB",
     "preview_size": 300,
-    "aupe_addr": "127.0.0.1",
+    "aupe_addr": "192.168.0.123",
     "fake_aupe_addr": "127.0.0.1",
     "cameras": [
         "LWAC",

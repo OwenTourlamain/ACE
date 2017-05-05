@@ -557,6 +557,7 @@ class CapturePanorama(QDialog):
                 QApplication.processEvents()
         self.infoLabel.setText(self.strings.MIT_Done)
         self.cancel.setText(self.strings.MIT_Close)
+        self.progress.setValue(100)
         # This stops the dialog closing automatically when done
         self.exec_()
 
