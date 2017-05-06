@@ -7,7 +7,6 @@ from PyQt5.QtGui import *
 from PIL.ImageQt import ImageQt
 
 class Tab(QWidget):
-    """docstring for PanTiltTab."""
 
     def __init__(self, config, strings, api, verbose):
         super().__init__()
@@ -276,7 +275,6 @@ class Tab(QWidget):
         self.preview.setPixmap(pixmap)
 
 class SquareButton(QToolButton):
-    """docstring for SquareButton."""
 
     def __init__(self, size=0, text=None):
         super(SquareButton, self).__init__()
@@ -296,7 +294,6 @@ class SquareButton(QToolButton):
 #        return QSize(self.size, self.size)
 
 class SquareLineEdit(QLineEdit):
-    """docstring for SquareButton."""
 
     def __init__(self, size=0, text=None):
         super(SquareLineEdit, self).__init__(text)
@@ -316,7 +313,6 @@ class SquareLineEdit(QLineEdit):
 #        return QSize(self.size, self.size)
 
 class SquareLabel(QLabel):
-    """docstring for SquareButton."""
 
     def __init__(self, size=0, text=None):
         super(SquareLabel, self).__init__(text)

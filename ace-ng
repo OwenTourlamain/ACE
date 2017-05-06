@@ -22,7 +22,6 @@ from PyQt5.QtGui import *
 # TODO: Clean imports
 
 class ACE_NG(QMainWindow):
-    """docstring for ACE_NG_APP."""
 
     def __init__(self):
         super().__init__()

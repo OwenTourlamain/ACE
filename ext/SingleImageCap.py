@@ -8,7 +8,6 @@ from PIL.ImageQt import ImageQt
 import os
 
 class Tab(QWidget):
-    """docstring for SingleImageCap."""
 
     def __init__(self, config, strings, api, verbose):
         super().__init__()
@@ -556,7 +555,6 @@ class Tab(QWidget):
             self.HRCMeteringGroup.setHidden(True)
 
 class SquareLabel(QLabel):
-    """docstring for SquareButton."""
 
     def __init__(self):
         super(SquareLabel, self).__init__()

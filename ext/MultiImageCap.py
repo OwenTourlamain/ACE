@@ -10,7 +10,6 @@ from xml.etree import ElementTree as xml
 import os
 
 class Tab(QWidget):
-    """docstring for MultiImageCap."""
 
     def __init__(self, config, strings, api, verbose):
         super().__init__()
@@ -528,7 +527,7 @@ class Tab(QWidget):
             self.blankCapture()
 
 class PanoramaSaver(object):
-    """docstring for PanoramaSaver."""
+
     def __init__(self):
         super(PanoramaSaver, self).__init__()
 
@@ -603,7 +602,7 @@ class PanoramaSaver(object):
         return panorama
 
 class PositionDialog(QDialog):
-    """docstring for PositionDialog."""
+
     def __init__(self, strings):
         super(PositionDialog, self).__init__()
 
@@ -640,7 +639,7 @@ class PositionDialog(QDialog):
             self.accept()
 
 class CaptureDialog(QDialog):
-    """docstring for CaptureDialog."""
+
     def __init__(self, strings):
         super(CaptureDialog, self).__init__()
 
@@ -669,7 +668,7 @@ class CaptureDialog(QDialog):
             self.accept()
 
 class PathDialog(QDialog):
-    """docstring for CaptureDialog."""
+
     def __init__(self, strings):
         super(PathDialog, self).__init__()
         self.strings = strings
@@ -708,7 +707,7 @@ class PathDialog(QDialog):
 
 
 class CapturePanorama(QDialog):
-    """docstring for CapturePanorama."""
+
     def __init__(self, strings, api, panorama):
         super(CapturePanorama, self).__init__()
         self.strings = strings
@@ -807,7 +806,7 @@ class CapturePanorama(QDialog):
         return total
 
 class Panorama(object):
-    """docstring for Panorama."""
+
     def __init__(self):
         super(Panorama, self).__init__()
 
@@ -850,7 +849,7 @@ class Panorama(object):
         self.positions.sort(reverse=True, key=lambda pos: pos.tilt)
 
 class PanoramaPosition(QListWidgetItem):
-    """docstring for PanoramaPosition."""
+
     def __init__(self, pan, tilt, name):
         super(PanoramaPosition, self).__init__()
         self.pan = pan
@@ -875,7 +874,7 @@ class PanoramaPosition(QListWidgetItem):
         return self.pan == other.pan and self.tilt == other.tilt
 
 class Capture(QListWidgetItem):
-    """docstring for Capture."""
+
     def __init__(self, name, camera=0, filter=0, gain=0.0, shutter=0.0,
                  shutter_target=0.0, roix=0, roiy=0, roiw=0, roih=0, aeMode=0,
                  aeAlg=0, aeTarget=0.0, aeTol=0.0, aeMax=0.0, aeMin=0.0, aeRate=0.0):
