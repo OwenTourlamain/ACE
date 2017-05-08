@@ -19,8 +19,6 @@ from lib.au import pancam_api as api
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
-# TODO: Clean imports
-
 class ACE_NG(QMainWindow):
 
     def __init__(self):
@@ -36,7 +34,7 @@ class ACE_NG(QMainWindow):
 
         # Populate the config and strings objects
         # TODO Grap exceptions from broken files
-        self.config = DynamicProperties(os.path.normpath("config/defaultConfig.json"), self.verbose, cleanPaths=True) # TODO: Remove hardcoded paths
+        self.config = DynamicProperties(os.path.normpath("config/defaultConfig.json"), self.verbose, cleanPaths=True)
         self.strings = DynamicProperties(os.path.normpath("lang/en-GB.json"), self.verbose)
         self.config.update(["config", self.config.usr_cfg_dir])
         self.strings.update(["lang", self.config.usr_lang_dir], self.config.lang_pref)
