@@ -67,6 +67,9 @@ class Tab(QWidget):
         self.LWACAeRate = QLineEdit(str(self.LWACcamera.ae_adjust_rate))
         self.LWACAeRate.setValidator(QDoubleValidator())
 
+        self.LWACAeOutliers = QLineEdit(str(self.LWACcamera.ae_outliers))
+        self.LWACAeOutliers.setValidator(QDoubleValidator())
+
         self.LWACGain = QLineEdit(str(self.LWACcamera.gain))
         self.LWACGain.setValidator(QIntValidator())
 
@@ -139,6 +142,9 @@ class Tab(QWidget):
         self.HRCAeRate = QLineEdit(str(self.HRCcamera.ae_adjust_rate))
         self.HRCAeRate.setValidator(QDoubleValidator())
 
+        self.HRCAeOutliers = QLineEdit(str(self.HRCcamera.ae_outliers))
+        self.HRCAeOutliers.setValidator(QDoubleValidator())
+
         self.HRCGain = QLineEdit(str(self.HRCcamera.gain))
         self.HRCGain.setValidator(QIntValidator())
 
@@ -208,6 +214,9 @@ class Tab(QWidget):
         self.RWACAeRate = QLineEdit(str(self.RWACcamera.ae_adjust_rate))
         self.RWACAeRate.setValidator(QDoubleValidator())
 
+        self.RWACAeOutliers = QLineEdit(str(self.RWACcamera.ae_outliers))
+        self.RWACAeOutliers.setValidator(QDoubleValidator())
+
         self.RWACGain = QLineEdit(str(self.RWACcamera.gain))
         self.RWACGain.setValidator(QIntValidator())
 
@@ -262,6 +271,7 @@ class Tab(QWidget):
         LWACAeLayout.addRow(self.strings.SIT_AeMax, self.LWACAeMax)
         LWACAeLayout.addRow(self.strings.SIT_AeMin, self.LWACAeMin)
         LWACAeLayout.addRow(self.strings.SIT_AeRate, self.LWACAeRate)
+        LWACAeLayout.addRow(self.strings.SIT_AeOutliers, self.LWACAeOutliers)
         self.LWACAeGroup = QGroupBox(self.strings.SIT_Ae)
         self.LWACAeGroup.setLayout(LWACAeLayout)
         self.LWACAeGroup.setHidden(True)
@@ -307,6 +317,7 @@ class Tab(QWidget):
         RWACAeLayout.addRow(self.strings.SIT_AeMax, self.RWACAeMax)
         RWACAeLayout.addRow(self.strings.SIT_AeMin, self.RWACAeMin)
         RWACAeLayout.addRow(self.strings.SIT_AeRate, self.RWACAeRate)
+        RWACAeLayout.addRow(self.strings.SIT_AeOutliers, self.RWACAeOutliers)
         self.RWACAeGroup = QGroupBox(self.strings.SIT_Ae)
         self.RWACAeGroup.setLayout(RWACAeLayout)
         self.RWACAeGroup.setHidden(True)
@@ -352,6 +363,7 @@ class Tab(QWidget):
         HRCAeLayout.addRow(self.strings.SIT_AeMax, self.HRCAeMax)
         HRCAeLayout.addRow(self.strings.SIT_AeMin, self.HRCAeMin)
         HRCAeLayout.addRow(self.strings.SIT_AeRate, self.HRCAeRate)
+        HRCAeLayout.addRow(self.strings.SIT_AeOutliers, self.HRCAeOutliers)
         self.HRCAeGroup = QGroupBox(self.strings.SIT_Ae)
         self.HRCAeGroup.setLayout(HRCAeLayout)
         self.HRCAeGroup.setHidden(True)
@@ -411,12 +423,13 @@ class Tab(QWidget):
             serverAE = False
             self.LWACcamera.shutter_mode = 1
 
-        ##self.aeAlg = capture.aeAlg ask!!
+        #self.LWACcamera.ae_algorithm = int(self.LWACAeAlg.text())
         self.LWACcamera.ae_target = float(self.LWACAeTarget.text())
         self.LWACcamera.ae_tolerance = float(self.LWACAeTol.text())
         self.LWACcamera.ae_max_shutter = float(self.LWACAeMax.text())
         self.LWACcamera.ae_min_shutter = float(self.LWACAeMin.text())
         self.LWACcamera.ae_adjust_rate = float(self.LWACAeRate.text())
+        self.LWACcamera.ae_outliers = float(self.LWACAeOutliers.text())
 
         self.LWACimage = self.LWACcamera.get_image(ae=serverAE)
         pixmap = QPixmap.fromImage(ImageQt(self.LWACimage.as_pil_image()).scaled(self.LWACpreview.size(), Qt.KeepAspectRatio))
@@ -450,12 +463,13 @@ class Tab(QWidget):
           serverAE = False
           self.RWACcamera.shutter_mode = 1
 
-        ##self.aeAlg = capture.aeAlg ask!!
+        self.RWACcamera.ae_algorithm = self.RWACAeAlg.currentIndex()
         self.RWACcamera.ae_target = float(self.RWACAeTarget.text())
         self.RWACcamera.ae_tolerance = float(self.RWACAeTol.text())
         self.RWACcamera.ae_max_shutter = float(self.RWACAeMax.text())
         self.RWACcamera.ae_min_shutter = float(self.RWACAeMin.text())
         self.RWACcamera.ae_adjust_rate = float(self.RWACAeRate.text())
+        self.RWACcamera.ae_outliers = float(self.RWACAeOutliers.text())
 
         self.RWACimage = self.RWACcamera.get_image(ae=serverAE)
         pixmap = QPixmap.fromImage(ImageQt(self.RWACimage.as_pil_image()).scaled(self.RWACpreview.size(), Qt.KeepAspectRatio))
@@ -488,12 +502,13 @@ class Tab(QWidget):
           serverAE = False
           self.HRCcamera.shutter_mode = 1
 
-        ##self.aeAlg = capture.aeAlg ask!!
+        #self.HRCcamera.ae_algorithm = int(self.HRCAeAlg.text())
         self.HRCcamera.ae_target = float(self.HRCAeTarget.text())
         self.HRCcamera.ae_tolerance = float(self.HRCAeTol.text())
         self.HRCcamera.ae_max_shutter = float(self.HRCAeMax.text())
         self.HRCcamera.ae_min_shutter = float(self.HRCAeMin.text())
         self.HRCcamera.ae_adjust_rate = float(self.HRCAeRate.text())
+        self.HRCcamera.ae_outliers = float(self.HRCAeOutliers.text())
 
         self.HRCimage = self.HRCcamera.get_image(ae=serverAE)
         pixmap = QPixmap.fromImage(ImageQt(self.HRCimage.as_pil_image()).scaled(self.HRCpreview.size(), Qt.KeepAspectRatio))

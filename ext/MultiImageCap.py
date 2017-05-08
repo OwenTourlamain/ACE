@@ -136,6 +136,10 @@ class Tab(QWidget):
         self.captureAeRate.setValidator(QDoubleValidator())
         self.captureAeRate.setEnabled(False)
 
+        self.captureAeOutliers = QLineEdit()
+        self.captureAeOutliers.setValidator(QDoubleValidator())
+        self.captureAeOutliers.setEnabled(False)
+
         self.captureGain = QLineEdit()
         self.captureGain.setValidator(QIntValidator())
         self.captureGain.setEnabled(False)
@@ -188,6 +192,7 @@ class Tab(QWidget):
         captureAeLayout.addRow(self.strings.MIT_AeMax, self.captureAeMax)
         captureAeLayout.addRow(self.strings.MIT_AeMin, self.captureAeMin)
         captureAeLayout.addRow(self.strings.MIT_AeRate, self.captureAeRate)
+        captureAeLayout.addRow(self.strings.MIT_AeOutliers, self.captureAeOutliers)
         self.captureAeGroup = QGroupBox(self.strings.MIT_Ae)
         self.captureAeGroup.setLayout(captureAeLayout)
         self.captureAeGroup.setHidden(True)
@@ -356,6 +361,7 @@ class Tab(QWidget):
         self.captureAeMax.setEnabled(True)
         self.captureAeMin.setEnabled(True)
         self.captureAeRate.setEnabled(True)
+        self.captureAeOutliers.setEnabled(True)
         self.captureGain.setEnabled(True)
         self.captureShutter.setEnabled(True)
         self.captureExposure.setEnabled(True)
@@ -411,6 +417,7 @@ class Tab(QWidget):
         self.currentCapture.aeMax = self.blankFloat(self.captureAeMax.text())
         self.currentCapture.aeMin = self.blankFloat(self.captureAeMin.text())
         self.currentCapture.aeRate = self.blankFloat(self.captureAeRate.text())
+        self.currentCapture.aeOutliers = self.blankFloat(self.captureAeOutliers.text())
         # Make sure we can actually see these changes
         self.currentCapture.updateText()
 
@@ -455,6 +462,7 @@ class Tab(QWidget):
         self.captureAeMax.setEnabled(False)
         self.captureAeMin.setEnabled(False)
         self.captureAeRate.setEnabled(False)
+        self.captureAeOutliers.setEnabled(False)
         self.captureGain.setEnabled(False)
         self.captureShutter.setEnabled(False)
         self.captureExposure.setEnabled(False)
@@ -541,7 +549,7 @@ class PanoramaSaver(object):
             )
             xmlPosition = xml.Element("position", attrib=attributes)
             for capture in position.captures:
-                (croix, croiy, croiw, croih) = capture.roi
+                (roix, roiy, roiw, roih) = capture.roi
                 capAttributes = dict(
                     name=capture.name,
                     camera=str(capture.camera),
@@ -549,10 +557,10 @@ class PanoramaSaver(object):
                     gain = str(capture.gain),
                     shutter = str(capture.shutter),
                     shutter_target = str(capture.shutter_target),
-                    roix = str(croix),
-                    roiy = str(croiy),
-                    roiw = str(croiw),
-                    roih = str(croih),
+                    roix = str(roix),
+                    roiy = str(roiy),
+                    roiw = str(roiw),
+                    roih = str(roih),
                     aeMode = str(capture.aeMode),
                     aeAlg = str(capture.aeAlg),
                     aeTarget = str(capture.aeTarget),
@@ -560,6 +568,7 @@ class PanoramaSaver(object):
                     aeMax = str(capture.aeMax),
                     aeMin = str(capture.aeMin),
                     aeRate = str(capture.aeRate),
+                    aeOutliers = str(capture.aeOutliers)
                 )
                 xmlCapture = xml.Element("capture", attrib=capAttributes)
                 xmlPosition.append(xmlCapture)
@@ -580,20 +589,21 @@ class PanoramaSaver(object):
                 name = xmlCapture.get("name")
                 camera = int(xmlCapture.get("camera"))
                 filter = int(xmlCapture.get("filter"))
-                gain = int(xmlCapture.get("filter"))
-                shutter = float(xmlCapture.get("filter"))
-                shutter_target = float(xmlCapture.get("filter"))
-                roix = int(xmlCapture.get("filter"))
-                roiy = int(xmlCapture.get("filter"))
-                roiw = int(xmlCapture.get("filter"))
-                roih = int(xmlCapture.get("filter"))
-                aeMode = float(xmlCapture.get("filter"))
-                aeAlg = float(xmlCapture.get("filter"))
-                aeTarget = float(xmlCapture.get("filter"))
-                aeTol = float(xmlCapture.get("filter"))
-                aeMax = float(xmlCapture.get("filter"))
-                aeMin = float(xmlCapture.get("filter"))
-                aeRate = float(xmlCapture.get("filter"))
+                gain = int(xmlCapture.get("gain"))
+                shutter = float(xmlCapture.get("shutter"))
+                shutter_target = float(xmlCapture.get("shutter_target"))
+                roix = int(xmlCapture.get("roix"))
+                roiy = int(xmlCapture.get("roiy"))
+                roiw = int(xmlCapture.get("roiw"))
+                roih = int(xmlCapture.get("roih"))
+                aeMode = float(xmlCapture.get("aeMode"))
+                aeAlg = float(xmlCapture.get("aeAlg"))
+                aeTarget = float(xmlCapture.get("aeTarget"))
+                aeTol = float(xmlCapture.get("aeTol"))
+                aeMax = float(xmlCapture.get("aeMax"))
+                aeMin = float(xmlCapture.get("aeMin"))
+                aeRate = float(xmlCapture.get("aeRate"))
+                aeOutliers = float(xmlCapture.get("aeOutliers"))
                 capture = Capture(name, camera, filter, gain, shutter, shutter_target,
                                   roix, roiy, roiw, roih, aeMode, aeAlg, aeTarget,
                                   aeTol, aeMax, aeMin, aeRate)
@@ -784,12 +794,13 @@ class CapturePanorama(QDialog):
             serverAE = False
             camera.shutter_mode = 1
 
-        ##self.aeAlg = capture.aeAlg ask!!
+        camera.ae_algorithm = capture.aeAlg
         camera.ae_target = capture.aeTarget
         camera.ae_tolerance = capture.aeTol
         camera.ae_max_shutter = capture.aeMax
         camera.ae_min_shutter = capture.aeMin
         camera.ae_adjust_rate = capture.aeRate
+        camera.ae_outliers = capture.aeOutliers
 
         image = camera.get_image(ae=serverAE)
         # Create a file/folder structure to store the images
@@ -877,7 +888,7 @@ class Capture(QListWidgetItem):
 
     def __init__(self, name, camera=0, filter=0, gain=0.0, shutter=0.0,
                  shutter_target=0.0, roix=0, roiy=0, roiw=0, roih=0, aeMode=0,
-                 aeAlg=0, aeTarget=0.0, aeTol=0.0, aeMax=0.0, aeMin=0.0, aeRate=0.0):
+                 aeAlg=0, aeTarget=0.0, aeTol=0.0, aeMax=0.0, aeMin=0.0, aeRate=0.0, aeOutliers=0.0):
         super(Capture, self).__init__()
         self.name = name
         self.camera = camera
@@ -893,6 +904,7 @@ class Capture(QListWidgetItem):
         self.aeMax = aeMax
         self.aeMin = aeMin
         self.aeRate = aeRate
+        self.aeOutliers = aeOutliers
 
         self.updateText()
 

@@ -37,11 +37,15 @@ Notable system features:
 
 - Extras:
   Extension module template included, as well as a simple example extension,
-  calibrate.py. Move this file to ext to load it into ACE-NG.
+  calibrate.py. Move this file to ext to load it into ACE-NG. An example panorama file 
+  has also been included here.
 
 Acknowledgements:
-- lib/au:
+- lib/au/*, and bin/*:
   Provided by Dr. Laurence Tyler, used without modification.
 
 - lang/cy-GB.json:
   File created by the author, translation services provided by James Cox (jsc12@aber.ac.uk)
+
+- Remaining files:
+  Created solely by the author
