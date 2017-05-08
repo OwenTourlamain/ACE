@@ -13,6 +13,8 @@ Dependencies:
  - Python 2.X
  - PyQt5
  - Pillow
+ For most Linux systems all dependancies can be met by running:
+	apt-get install python3-pyqt5
 
 Notable system features:
 - Dynamic language files:
