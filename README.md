@@ -2,6 +2,8 @@ ACE: Data capture application for the Aberystwyth University PanCam Emulator (AU
 - Author:     Owen Tourlamain
 - Supervisor: Dr. Laurence Tyler
 
+Note: This project relies upon code that cannot be included for licencing reasons, as such it will not run in its current form.
+
 Usage:
  ace-ng [-fv]
 
@@ -51,3 +53,6 @@ Acknowledgements:
 
 - Remaining files:
   Created solely by the author
+  
+Licencing
+The author withholds all permissions for use, modification and redistribution of this work.
