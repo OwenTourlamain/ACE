@@ -54,5 +54,4 @@ Acknowledgements:
 - Remaining files:
   Created solely by the author
   
-Licencing
-The author withholds all permissions for use, modification and redistribution of this work.
+Licencing: The author withholds all permissions for use, modification and redistribution of this work.
